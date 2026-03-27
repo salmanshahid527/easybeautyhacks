@@ -1,0 +1,110 @@
+import { cache } from "react";
+import { fetchWp } from "./client";
+import { mapWpPostToPost, mapWpPostToPostDetail } from "./map";
+import { processPostBody } from "@/lib/html";
+import type { WpPost } from "./types";
+import type { Post, PostDetail } from "@/types";
+
+export const getPostBySlug = cache(async function (
+  slug: string
+): Promise<PostDetail | null> {
+  const data = await fetchWp<WpPost[]>("/posts", {
+    slug,
+    per_page: 1,
+    _embed: 1,
+  });
+  if (!data[0]) return null;
+  const detail = mapWpPostToPostDetail(data[0]);
+  detail.body = processPostBody(detail.body);
+  return detail;
+});
+
+export const getPostsForBlog = cache(async function (): Promise<Post[]> {
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    per_page: 50,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+  return data.map(mapWpPostToPost);
+});
+
+export const getFeaturedPosts = cache(async function (): Promise<Post[]> {
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    per_page: 6,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+  return data.map(mapWpPostToPost);
+});
+
+export const getPostsForCategoryBySlug = cache(async function (
+  categorySlug: string
+): Promise<Post[]> {
+  // First get category ID
+  const catData = await fetchWp<Array<{ id: number }>>("/categories", {
+    slug: categorySlug,
+  });
+  if (!catData[0]) return [];
+
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    categories: catData[0].id,
+    per_page: 50,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+  return data.map(mapWpPostToPost);
+});
+
+export const getPostsForMultipleCategories = cache(async function (
+  categoryIds: number[],
+  limitPerCategory: number
+): Promise<Record<number, Post[]>> {
+  if (categoryIds.length === 0) return {};
+
+  const maxPosts = Math.min(categoryIds.length * limitPerCategory * 3, 100);
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    per_page: maxPosts,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+
+  const idSet = new Set(categoryIds);
+  const result: Record<number, Post[]> = {};
+  const countByCategory: Record<number, number> = {};
+
+  for (const id of categoryIds) {
+    result[id] = [];
+    countByCategory[id] = 0;
+  }
+
+  for (const wp of data) {
+    for (const cid of wp.categories) {
+      if (idSet.has(cid) && (countByCategory[cid] ?? 0) < limitPerCategory) {
+        result[cid] = result[cid] ?? [];
+        result[cid].push(mapWpPostToPost(wp));
+        countByCategory[cid] = (countByCategory[cid] ?? 0) + 1;
+      }
+    }
+  }
+
+  return result;
+});
+
+export async function searchPosts(query: string): Promise<Post[]> {
+  if (!query.trim()) return [];
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    search: query,
+    per_page: 20,
+    status: "publish",
+  });
+  return data.map(mapWpPostToPost);
+}

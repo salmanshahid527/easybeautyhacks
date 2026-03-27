@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+/* ─── Beauty Design Tokens ──────────────────────────────── */
+:root {
+  /* Surfaces */
+  --background:           #f6faf5;
+  --background-alt:       #eef5ec;
+  --card:                 #ffffff;
+  --card-foreground:      #1a2a1e;
+  --popover:              #ffffff;
+  --popover-foreground:   #1a2a1e;
+  --surface-warm:         #f0f7ee;
+
+  /* Text */
+  --foreground:           #1a2a1e;
+  --foreground-muted:     #4a6651;
+  --foreground-subtle:    #7a9b82;
+
+  /* Brand — dusty rose */
+  --primary:              #c4507a;
+  --primary-foreground:   #ffffff;
+  --primary-muted:        #f9e8ef;
+  --primary-hover:        #b0406a;
+
+  /* Secondary — forest green */
+  --secondary:            #3a6b4a;
+  --secondary-foreground: #ffffff;
+
+  /* Muted / neutral */
+  --muted:                #eef5ec;
+  --muted-foreground:     #6b8f72;
+
+  /* Accent */
+  --accent:               #f9e8ef;
+  --accent-foreground:    #b0406a;
+
+  /* Semantic */
+  --destructive:          hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  /* Chrome */
+  --border:               #cfe0cc;
+  --input:                #cfe0cc;
+  --ring:                 #c4507a;
+  --radius:               0.625rem;
+  --section-gap:          4rem;
+
+  /* Shadows */
+  --shadow-sm:    0 2px 8px rgba(30,60,30,0.07);
+  --shadow-md:    0 8px 24px rgba(30,60,30,0.09);
+  --shadow-lg:    0 20px 48px rgba(30,60,30,0.11);
+  --shadow-brand: 0 4px 20px rgba(196,80,122,0.28);
+}
+
+@media (min-width: 768px) {
+  :root { --section-gap: 5rem; }
+}
+
+/* ─── Dark Mode (forest/pine theme) ─────────────────────── */
+.dark {
+  --background:           #0f1a12;
+  --background-alt:       #162019;
+  --card:                 #1c2a1f;
+  --card-foreground:      #e8f5eb;
+  --popover:              #1c2a1f;
+  --popover-foreground:   #e8f5eb;
+  --surface-warm:         #1f3024;
+
+  --foreground:           #e8f5eb;
+  --foreground-muted:     #9dbfa5;
+  --foreground-subtle:    #6b8f72;
+
+  --primary:              #d4607a;
+  --primary-foreground:   #ffffff;
+  --primary-muted:        #3d1020;
+  --primary-hover:        #e0708a;
+
+  --secondary:            #5a9b6a;
+  --secondary-foreground: #ffffff;
+
+  --muted:                #1c2a1f;
+  --muted-foreground:     #9dbfa5;
+
+  --accent:               #3d1020;
+  --accent-foreground:    #d4607a;
+
+  --destructive:          hsl(0 62% 50%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --border:               #2a3d2e;
+  --input:                #2a3d2e;
+  --ring:                 #d4607a;
+}
+
+/* ─── Tailwind v4 Bridge ─────────────────────────────────── */
+@theme inline {
+  --color-background:           var(--background);
+  --color-background-alt:       var(--background-alt);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-surface-warm:         var(--surface-warm);
+  --color-foreground:           var(--foreground);
+  --color-foreground-muted:     var(--foreground-muted);
+  --color-foreground-subtle:    var(--foreground-subtle);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-primary-muted:        var(--primary-muted);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+  /* Playfair Display for headings, Nunito Sans for body */
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-sans:    var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --radius-sm:  calc(var(--radius) - 2px);
+  --radius-md:  var(--radius);
+  --radius-lg:  calc(var(--radius) + 4px);
+  --radius-xl:  calc(var(--radius) + 10px);
+}
+
+/* ─── Base ──────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Utility Classes ───────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 300ms cubic-bezier(0.22,1,0.36,1),
+              box-shadow 300ms cubic-bezier(0.22,1,0.36,1);
+}
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Image zoom within overflow-hidden parent */
+.img-zoom img {
+  transition: transform 600ms cubic-bezier(0.22,1,0.36,1);
+}
+.img-zoom:hover img { transform: scale(1.05); }
+
+/* Nav link animated underline */
+.nav-link { position: relative; }
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px; left: 0;
+  height: 2px; width: 0;
+  background: var(--primary);
+  transition: width 250ms cubic-bezier(0.22,1,0.36,1);
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Hide scrollbar (horizontal strips) */
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* Section spacing */
+.section-gap {
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+}
+
+/* Overline label style */
+.overline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Prose for WP content */
+.prose-beauty {
+  max-width: none;
+  color: var(--foreground);
+  line-height: 1.8;
+  font-size: 1.0625rem;
+}
+.prose-beauty h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  border-left: 4px solid var(--primary);
+  padding-left: 0.875rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+}
+.prose-beauty h3 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--foreground);
+}
+.prose-beauty p { margin-bottom: 1.25rem; }
+.prose-beauty a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+.prose-beauty a:hover { color: var(--primary-hover); }
+.prose-beauty blockquote {
+  background: var(--primary-muted);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  font-style: italic;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--foreground);
+  margin: 1.5rem 0;
+}
+.prose-beauty blockquote p { margin: 0; }
+.prose-beauty img { border-radius: var(--radius-lg); width: 100%; height: auto; }
+.prose-beauty ul { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.prose-beauty li { margin-bottom: 0.5rem; }
+.prose-beauty strong { font-weight: 700; }
+
+/* Gradient text — rose to forest green */
+.gradient-brand {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Prevent FOUC */
+html.dark body { background-color: #0f1a12; }

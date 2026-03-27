@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Face -->
+  <circle cx="16" cy="15" r="8" fill="#f9e8ef" stroke="#c4507a" stroke-width="1.5"/>
+  <!-- Eye (right side in profile-ish front face) -->
+  <ellipse cx="18.5" cy="13" rx="1.3" ry="1.5" fill="#c4507a"/>
+  <!-- Small dot eye left -->
+  <circle cx="13.5" cy="13" r="1.1" fill="#1a2a1e"/>
+  <!-- Lips -->
+  <path d="M13.5 18.5 Q16 20.5 18.5 18.5" stroke="#c4507a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <!-- Eyebrow left -->
+  <path d="M12 11 Q13.5 9.5 15 10.5" stroke="#1a2a1e" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Eyebrow right -->
+  <path d="M17 10.5 Q18.5 9.5 20 11" stroke="#1a2a1e" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Hair flowing -->
+  <path d="M8 15 Q7 6 16 5 Q22 4 24 9 Q28 13 25 20" stroke="#3a6b4a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M8 15 Q6 18 8 22 Q10 26 14 27" stroke="#3a6b4a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Neck -->
+  <path d="M14 23 L14 29 Q16 31 18 29 L18 23" fill="#f9e8ef" stroke="#c4507a" stroke-width="1"/>
+</svg>

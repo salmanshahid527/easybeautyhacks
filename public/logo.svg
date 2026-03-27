@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 52" fill="none">
+  <!-- Face icon same as favicon but scaled -->
+  <circle cx="22" cy="22" r="11" fill="#f9e8ef" stroke="#c4507a" stroke-width="1.8"/>
+  <ellipse cx="25.5" cy="19.5" rx="1.6" ry="1.8" fill="#c4507a"/>
+  <circle cx="19" cy="19.5" r="1.4" fill="#1a2a1e"/>
+  <path d="M18.5 25.5 Q22 27.5 25.5 25.5" stroke="#c4507a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M16.5 16.5 Q18.5 14.5 21 15.5" stroke="#1a2a1e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <path d="M23 15.5 Q25.5 14.5 27.5 16.5" stroke="#1a2a1e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <path d="M11 22 Q10 11 22 9 Q28 8 31 13 Q36 18 33 26" stroke="#3a6b4a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M11 22 Q9 26 11 31 Q13 36 18 38" stroke="#3a6b4a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M19.5 33 L19.5 42 Q22 44 24.5 42 L24.5 33" fill="#f9e8ef" stroke="#c4507a" stroke-width="1.2"/>
+  <!-- Wordmark text -->
+  <text x="56" y="35" font-family="Georgia, serif" font-size="20" font-weight="700" letter-spacing="-0.02em">
+    <tspan fill="#c4507a">easy</tspan><tspan fill="#1a2a1e">beauty</tspan><tspan fill="#3a6b4a">hacks</tspan>
+  </text>
+</svg>
