@@ -36,10 +36,8 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   const wpImages = featuredPosts.slice(0, 3).filter((p) => p.featuredImage);
-  // Use WP images when available, otherwise fall back to curated Unsplash images
   const heroImages =
     wpImages.length > 0
       ? wpImages.map((p) => ({ src: p.featuredImage!, alt: p.title }))
@@ -50,7 +48,7 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
       ref={ref}
       className="relative min-h-[62vh] overflow-hidden flex items-center bg-background"
     >
-      {/* Background gradient blobs */}
+      {/* Background gradient blobs — parallax */}
       <motion.div
         style={{ y: bgY }}
         className="absolute inset-0 pointer-events-none"
@@ -61,50 +59,26 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
 
       <div className="relative z-10 w-full mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <motion.div style={{ y: textY, opacity }}>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="overline text-primary mb-4"
-            >
+          {/* Text — CSS fade-up animations, parallax y via motion */}
+          <motion.div style={{ y: textY }}>
+            <p className="overline text-primary mb-4 hero-fade-1">
               Beauty Tips &amp; Hacks
-            </motion.p>
+            </p>
 
-            <h1 className="font-display font-semibold leading-tight mb-6">
-              {["Your", "Best", "Beauty", "Starts", "Here"].map((word, i) => (
-                <motion.span
-                  key={word + i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.2 + i * 0.08,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="inline-block mr-3 text-5xl sm:text-6xl lg:text-7xl text-foreground"
-                >
-                  {word}
-                </motion.span>
-              ))}
+            <h1 className="font-display font-semibold leading-tight mb-6 hero-fade-2">
+              <span className="block text-5xl sm:text-6xl lg:text-7xl text-foreground">
+                Your Best Beauty
+              </span>
+              <span className="block text-5xl sm:text-6xl lg:text-7xl text-foreground">
+                Starts Here
+              </span>
             </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-lg text-foreground leading-relaxed mb-8 max-w-md"
-            >
+            <p className="text-lg text-foreground leading-relaxed mb-8 max-w-md hero-fade-3">
               Easy tips for glowing skin, perfect makeup &amp; beautiful hair
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.85 }}
-              className="flex flex-wrap gap-3"
-            >
+            <div className="flex flex-wrap gap-3 hero-fade-4">
               <Link
                 href="/blog"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-accent-foreground text-primary-foreground font-medium transition-all hover:shadow-[var(--shadow-brand)] hover:-translate-y-0.5"
@@ -118,25 +92,15 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
               >
                 Browse Skincare
               </Link>
-            </motion.div>
+            </div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1 }}
-              className="mt-6 text-xs text-foreground-subtle"
-            >
+            <p className="mt-6 text-xs text-foreground-subtle hero-fade-5">
               500+ tips · 5 categories · Updated weekly
-            </motion.p>
+            </p>
           </motion.div>
 
-          {/* Image Collage — always visible (WP images or Unsplash fallbacks) */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="relative h-[400px] hidden lg:block"
-          >
+          {/* Image Collage */}
+          <div className="relative h-[400px] hidden lg:block hero-fade-img">
             {heroImages.map((img, i) => {
               const transforms = [
                 "rotate-[-2deg] translate-x-4",
@@ -150,18 +114,10 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
                 "top-28 left-12",
               ];
               const zIndexes = [10, 20, 30];
-              const delays = [0.5, 0.65, 0.8];
 
               return (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: delays[i],
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
                   className={`absolute ${positions[i]} ${sizes[i]} ${transforms[i]} rounded-2xl overflow-hidden border-2 border-white/80 shadow-xl`}
                   style={{ zIndex: zIndexes[i] }}
                 >
@@ -173,10 +129,10 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
                     sizes="280px"
                     priority={i === 0}
                   />
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </div>
 
