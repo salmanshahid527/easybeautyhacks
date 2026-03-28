@@ -1,45 +1,106 @@
 import type { MetadataRoute } from "next";
-import { getPostsForBlog } from "@/lib/wp/post";
-import { getCategories } from "@/lib/wp/categories";
 import { SITE_URL } from "@/lib/constants";
+import { getAllCategoriesForSitemap } from "@/lib/wp/categories";
+import { getWpBackedStaticPagesForSitemap } from "@/lib/wp/pages";
+import { getAllPublishedPostsForSitemap } from "@/lib/wp/post";
+
+/** Google’s limit per sitemap file */
+const MAX_URLS_PER_SITEMAP = 50_000;
+
+/** Served on-demand so production builds do not require WordPress during `next build` */
+export const dynamic = "force-dynamic";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, categories] = await Promise.all([
-    getPostsForBlog(),
-    getCategories(),
+  const [posts, categories, wpBacked] = await Promise.all([
+    getAllPublishedPostsForSitemap(),
+    getAllCategoriesForSitemap(),
+    getWpBackedStaticPagesForSitemap(),
   ]);
 
-  // Static pages: use a fixed date so Google doesn't crawl them on every sitemap refresh
+  const wpModByPath = new Map(
+    wpBacked.map((e) => [e.path, e.lastModified] as const)
+  );
+
   const sitelaunchDate = new Date("2026-03-01");
-  const staticPages: MetadataRoute.Sitemap = [
-    { url: SITE_URL,                    lastModified: sitelaunchDate, changeFrequency: "daily",   priority: 1 },
-    { url: `${SITE_URL}/blog`,          lastModified: sitelaunchDate, changeFrequency: "daily",   priority: 0.9 },
-    { url: `${SITE_URL}/shop`,          lastModified: sitelaunchDate, changeFrequency: "weekly",  priority: 0.6 },
-    { url: `${SITE_URL}/about`,         lastModified: sitelaunchDate, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${SITE_URL}/contact`,       lastModified: sitelaunchDate, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${SITE_URL}/privacy`,       lastModified: sitelaunchDate, changeFrequency: "yearly",  priority: 0.3 },
+  const feedFreshness =
+    posts[0]?.modifiedAt ?? posts[0]?.publishedAt
+      ? new Date(posts[0].modifiedAt ?? posts[0].publishedAt)
+      : sitelaunchDate;
+
+  const staticDefs: Array<{
+    path: string;
+    changeFrequency: MetadataRoute.Sitemap[0]["changeFrequency"];
+    priority: number;
+    lastModified: Date;
+  }> = [
+    {
+      path: "/",
+      changeFrequency: "daily",
+      priority: 1,
+      lastModified: feedFreshness,
+    },
+    {
+      path: "/blog",
+      changeFrequency: "daily",
+      priority: 0.9,
+      lastModified: feedFreshness,
+    },
+    {
+      path: "/shop",
+      changeFrequency: "weekly",
+      priority: 0.6,
+      lastModified: wpModByPath.get("/shop") ?? sitelaunchDate,
+    },
+    {
+      path: "/about",
+      changeFrequency: "monthly",
+      priority: 0.5,
+      lastModified: wpModByPath.get("/about") ?? sitelaunchDate,
+    },
+    {
+      path: "/contact",
+      changeFrequency: "monthly",
+      priority: 0.4,
+      lastModified: wpModByPath.get("/contact") ?? sitelaunchDate,
+    },
+    {
+      path: "/privacy",
+      changeFrequency: "yearly",
+      priority: 0.3,
+      lastModified: wpModByPath.get("/privacy") ?? sitelaunchDate,
+    },
   ];
+
+  const staticPages: MetadataRoute.Sitemap = staticDefs.map((d) => ({
+    url: d.path === "/" ? SITE_URL : `${SITE_URL}${d.path}`,
+    lastModified: d.lastModified,
+    changeFrequency: d.changeFrequency,
+    priority: d.priority,
+  }));
 
   const categoryPages: MetadataRoute.Sitemap = categories.map((cat) => ({
     url: `${SITE_URL}/category/${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
+    lastModified: sitelaunchDate,
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
-    // Prefer modifiedAt — Google uses this for content freshness signals
-    lastModified: post.modifiedAt
-      ? new Date(post.modifiedAt)
-      : post.publishedAt
-        ? new Date(post.publishedAt)
-        : new Date(),
-    changeFrequency: "monthly",
+    lastModified: new Date(post.modifiedAt ?? post.publishedAt),
+    changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticPages, ...categoryPages, ...postPages];
+  const combined = [...staticPages, ...categoryPages, ...postPages];
+
+  if (combined.length > MAX_URLS_PER_SITEMAP) {
+    throw new Error(
+      `Sitemap has ${combined.length} URLs (max ${MAX_URLS_PER_SITEMAP}). Split with generateSitemaps or trim content.`
+    );
+  }
+
+  return combined;
 }

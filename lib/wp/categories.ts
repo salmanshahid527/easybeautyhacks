@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { fetchWp } from "./client";
+import { fetchWp, fetchWpCollectionAll } from "./client";
 import { mapWpCategoryToCategory } from "./map";
 import type { WpCategory } from "./types";
 import type { Category } from "@/types";
@@ -13,6 +13,16 @@ export const getCategories = cache(async function (): Promise<Category[]> {
   });
   return data.map(mapWpCategoryToCategory);
 });
+
+/** All non-empty categories (paginated) — for sitemap */
+export async function getAllCategoriesForSitemap(): Promise<Category[]> {
+  const data = await fetchWpCollectionAll<WpCategory>("/categories", {
+    orderby: "count",
+    order: "desc",
+    hide_empty: true,
+  });
+  return data.map(mapWpCategoryToCategory);
+}
 
 export const getCategoryBySlug = cache(async function (
   slug: string

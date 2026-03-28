@@ -1,9 +1,12 @@
 import { cache } from "react";
-import { fetchWp } from "./client";
+import { fetchWp, fetchWpCollectionAll } from "./client";
 import { decodeHtmlEntities, stripHtml, processPostBody } from "@/lib/html";
 import type { WpPage } from "./types";
 import type { Page } from "@/types";
 import { SLUG_FALLBACKS } from "@/lib/constants";
+
+/** WP pages that map 1:1 to app routes under `SITE_URL` */
+const WP_PAGE_SLUGS_FOR_SITEMAP = ["about", "contact", "privacy", "shop"] as const;
 
 function mapWpPageToPage(wp: WpPage): Page {
   return {
@@ -44,3 +47,26 @@ export const getAllPages = cache(async function (): Promise<Page[]> {
   });
   return data.map(mapWpPageToPage);
 });
+
+/** Last-modified for static app routes backed by WP pages (avoids listing orphan WP URLs) */
+export async function getWpBackedStaticPagesForSitemap(): Promise<
+  Array<{ path: string; lastModified: Date }>
+> {
+  const data = await fetchWpCollectionAll<WpPage>("/pages", {
+    status: "publish",
+    orderby: "modified",
+    order: "desc",
+  });
+  const bySlug = new Map(data.map((p) => [p.slug, p]));
+  const out: Array<{ path: string; lastModified: Date }> = [];
+  for (const slug of WP_PAGE_SLUGS_FOR_SITEMAP) {
+    const wp = bySlug.get(slug);
+    if (!wp) continue;
+    const raw = wp.modified ?? wp.date;
+    out.push({
+      path: `/${slug}`,
+      lastModified: raw ? new Date(raw) : new Date(),
+    });
+  }
+  return out;
+}

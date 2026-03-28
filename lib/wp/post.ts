@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { fetchWp } from "./client";
+import { fetchWp, fetchWpCollectionAll } from "./client";
 import { mapWpPostToPost, mapWpPostToPostDetail } from "./map";
 import { processPostBody } from "@/lib/html";
 import type { WpPost } from "./types";
@@ -29,6 +29,23 @@ export const getPostsForBlog = cache(async function (): Promise<Post[]> {
   });
   return data.map(mapWpPostToPost);
 });
+
+/** Every published post (paginated) — lightweight fields for sitemap */
+export async function getAllPublishedPostsForSitemap(): Promise<
+  Array<{ slug: string; modifiedAt: string; publishedAt: string }>
+> {
+  type Row = Pick<WpPost, "slug" | "date" | "modified">;
+  const rows = await fetchWpCollectionAll<Row>("/posts", {
+    status: "publish",
+    orderby: "modified",
+    order: "desc",
+  });
+  return rows.map((wp) => ({
+    slug: wp.slug,
+    publishedAt: wp.date,
+    modifiedAt: wp.modified ?? wp.date,
+  }));
+}
 
 export const getFeaturedPosts = cache(async function (): Promise<Post[]> {
   const data = await fetchWp<WpPost[]>("/posts", {
