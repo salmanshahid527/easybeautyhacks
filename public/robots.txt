@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /search
+Disallow: /search/
+
+Sitemap: https://easybeautyhacks.com/sitemap.xml
