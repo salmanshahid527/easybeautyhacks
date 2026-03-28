@@ -16,11 +16,15 @@ export const getCategories = cache(async function (): Promise<Category[]> {
 
 /** All non-empty categories (paginated) — for sitemap */
 export async function getAllCategoriesForSitemap(): Promise<Category[]> {
-  const data = await fetchWpCollectionAll<WpCategory>("/categories", {
-    orderby: "count",
-    order: "desc",
-    hide_empty: true,
-  });
+  const data = await fetchWpCollectionAll<WpCategory>(
+    "/categories",
+    {
+      orderby: "count",
+      order: "desc",
+      hide_empty: true,
+    },
+    { revalidate: false }
+  );
   return data.map(mapWpCategoryToCategory);
 }
 

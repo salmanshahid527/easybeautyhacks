@@ -87,6 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  /** Individual articles — `/blog/[slug]` (every published WordPress post) */
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
     lastModified: new Date(post.modifiedAt ?? post.publishedAt),
@@ -94,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const combined = [...staticPages, ...categoryPages, ...postPages];
+  const combined = [...staticPages, ...postPages, ...categoryPages];
 
   if (combined.length > MAX_URLS_PER_SITEMAP) {
     throw new Error(

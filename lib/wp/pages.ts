@@ -52,11 +52,15 @@ export const getAllPages = cache(async function (): Promise<Page[]> {
 export async function getWpBackedStaticPagesForSitemap(): Promise<
   Array<{ path: string; lastModified: Date }>
 > {
-  const data = await fetchWpCollectionAll<WpPage>("/pages", {
-    status: "publish",
-    orderby: "modified",
-    order: "desc",
-  });
+  const data = await fetchWpCollectionAll<WpPage>(
+    "/pages",
+    {
+      status: "publish",
+      orderby: "modified",
+      order: "desc",
+    },
+    { revalidate: false }
+  );
   const bySlug = new Map(data.map((p) => [p.slug, p]));
   const out: Array<{ path: string; lastModified: Date }> = [];
   for (const slug of WP_PAGE_SLUGS_FOR_SITEMAP) {

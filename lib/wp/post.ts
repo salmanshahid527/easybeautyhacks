@@ -35,16 +35,29 @@ export async function getAllPublishedPostsForSitemap(): Promise<
   Array<{ slug: string; modifiedAt: string; publishedAt: string }>
 > {
   type Row = Pick<WpPost, "slug" | "date" | "modified">;
-  const rows = await fetchWpCollectionAll<Row>("/posts", {
-    status: "publish",
-    orderby: "modified",
-    order: "desc",
-  });
-  return rows.map((wp) => ({
-    slug: wp.slug,
-    publishedAt: wp.date,
-    modifiedAt: wp.modified ?? wp.date,
-  }));
+  const rows = await fetchWpCollectionAll<Row>(
+    "/posts",
+    {
+      status: "publish",
+      orderby: "date",
+      order: "desc",
+    },
+    { revalidate: false }
+  );
+  const seen = new Set<string>();
+  const out: Array<{ slug: string; modifiedAt: string; publishedAt: string }> =
+    [];
+  for (const wp of rows) {
+    const slug = wp.slug?.trim();
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push({
+      slug,
+      publishedAt: wp.date,
+      modifiedAt: wp.modified ?? wp.date,
+    });
+  }
+  return out;
 }
 
 export const getFeaturedPosts = cache(async function (): Promise<Post[]> {
