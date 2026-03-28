@@ -16,17 +16,46 @@ try {
   // ignore
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://easybeautyhacks.com";
+let siteHostname = "easybeautyhacks.com";
+try {
+  if (siteUrl.startsWith("http")) siteHostname = new URL(siteUrl).hostname;
+} catch {
+  // ignore
+}
+
+/** Allow http + https so dev / plain-HTTP API hosts work with next/image */
+function pushWpImageHosts(
+  patterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]>,
+  seen: Set<string>,
+  hostname: string
+) {
+  if (!hostname || seen.has(hostname)) return;
+  seen.add(hostname);
+  patterns.push(
+    { protocol: "https", hostname, pathname: "/**" },
+    { protocol: "http", hostname, pathname: "/**" }
+  );
+  if (!hostname.startsWith("www.")) {
+    pushWpImageHosts(patterns, seen, `www.${hostname}`);
+  }
+}
+
+const imageHostSeen = new Set<string>();
+const remotePatterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> = [];
+pushWpImageHosts(remotePatterns, imageHostSeen, wpHostname);
+pushWpImageHosts(remotePatterns, imageHostSeen, siteHostname);
+remotePatterns.push(
+  { protocol: "https", hostname: "secure.gravatar.com", pathname: "/**" },
+  { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+  { protocol: "https", hostname: "*.hostingersite.com", pathname: "/**" },
+  { protocol: "https", hostname: "*.wordpress.com", pathname: "/**" }
+);
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: _dirname,
   images: {
-    remotePatterns: [
-      { protocol: "https", hostname: wpHostname, pathname: "/**" },
-      { protocol: "https", hostname: `www.${wpHostname}`, pathname: "/**" },
-      { protocol: "https", hostname: "secure.gravatar.com", pathname: "/**" },
-      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
-      { protocol: "https", hostname: "*.hostingersite.com", pathname: "/**" },
-      { protocol: "https", hostname: "*.wordpress.com", pathname: "/**" },
-    ],
+    remotePatterns,
   },
   async rewrites() {
     if (!wpBaseUrl) return [];

@@ -1,14 +1,21 @@
-// Expected format: https://example.com/wp-json
-const apiUrl =
-  (process.env.NEXT_PUBLIC_WP_API_URL ?? "http://easybeautyhacks.com/wp-json")
-    .replace(/\/$/, "");
-const apiBase = `${apiUrl}/wp/v2`;
+// Expected format: https://api.example.com/wp-json (trailing slash optional)
+function wpApiRoot(): string {
+  const v = process.env.NEXT_PUBLIC_WP_API_URL?.trim().replace(/\/$/, "") ?? "";
+  if (!v) {
+    throw new Error(
+      "Set NEXT_PUBLIC_WP_API_URL to your WordPress REST root (e.g. https://api.example.com/wp-json)"
+    );
+  }
+  return v;
+}
+
+const apiBase = () => `${wpApiRoot()}/wp/v2`;
 
 export async function fetchWp<T>(
   path: string,
   params?: Record<string, string | number | boolean | undefined>
 ): Promise<T> {
-  const url = new URL(`${apiBase}${path}`);
+  const url = new URL(`${apiBase()}${path}`);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -37,7 +44,7 @@ export async function fetchWpClient<T>(
   path: string,
   params?: Record<string, string | number | boolean | undefined>
 ): Promise<T> {
-  const url = new URL(`${apiBase}${path}`);
+  const url = new URL(`${apiBase()}${path}`);
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
