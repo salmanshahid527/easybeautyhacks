@@ -21,7 +21,7 @@ export function ArticleJsonLd({
   imageUrl,
   categoryTitle,
 }: ArticleJsonLdProps) {
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${SITE_URL}/${slug}`;
   const absoluteImage =
     imageUrl?.startsWith("http") ? imageUrl : imageUrl ? `${SITE_URL}${imageUrl}` : undefined;
 

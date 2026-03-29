@@ -87,9 +87,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  /** Individual articles — `/blog/[slug]` (every published WordPress post) */
+  /** Individual articles — `/{slug}` (WordPress post name permalinks) */
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
+    url: `${SITE_URL}/${post.slug}`,
     lastModified: new Date(post.modifiedAt ?? post.publishedAt),
     changeFrequency: "monthly" as const,
     priority: 0.7,

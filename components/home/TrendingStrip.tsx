@@ -48,7 +48,7 @@ export function TrendingStrip({ posts }: TrendingStripProps) {
         >
           {posts.slice(0, 4).map((post, i) => (
             <motion.div key={post._id} variants={fadeUpVariant}>
-              <Link href={`/blog/${post.slug}`} className="group relative block">
+              <Link href={`/${post.slug}`} className="group relative block">
                 {/* Ranking number */}
                 <span
                   className="absolute -top-4 -left-2 font-display font-bold text-7xl leading-none select-none pointer-events-none z-0"

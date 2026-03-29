@@ -34,7 +34,7 @@ export function buildPostMetadata({
   authorName?: string;
   categoryTitle?: string;
 }): Metadata {
-  const canonical = `${SITE_URL}/blog/${slug}`;
+  const canonical = `${SITE_URL}/${slug}`;
   const ogImage = buildOgImage(imageUrl);
 
   return {

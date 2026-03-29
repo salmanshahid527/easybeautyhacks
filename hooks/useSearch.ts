@@ -23,5 +23,7 @@ export function useSearch(query: string) {
     queryFn: () => fetchSearchResults(query),
     enabled: query.trim().length >= 2,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

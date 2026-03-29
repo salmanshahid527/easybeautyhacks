@@ -24,7 +24,7 @@ export function PostCard({
         className
       )}
     >
-      <Link href={`/blog/${post.slug}`} className="block">
+      <Link href={`/${post.slug}`} className="block">
         {/* Image */}
         <div
           className={cn(
@@ -75,7 +75,7 @@ export function PostCard({
           </Link>
         )}
 
-        <Link href={`/blog/${post.slug}`}>
+        <Link href={`/${post.slug}`}>
           <h3
             className={cn(
               "font-display font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2",
@@ -98,7 +98,7 @@ export function PostCard({
             <time dateTime={post.publishedAt}>{formatDateShort(post.publishedAt)}</time>
           </div>
           <Link
-            href={`/blog/${post.slug}`}
+            href={`/${post.slug}`}
             className="text-xs font-medium text-secondary hover:text-primary transition-colors"
           >
             Read more →

@@ -27,7 +27,7 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ title, slug }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${SITE_URL}/${slug}`;
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(url);
