@@ -90,13 +90,20 @@ export async function fetchWpCollectionAll<T>(
     const res = await fetch(url.toString(), fetchInit);
 
     if (!res.ok) {
-      if (res.status === 404 && page === 1) return [];
+      if (page === 1 && res.status === 404) return [];
+      // WordPress often returns 400 (not 404/[]) when `page` is beyond the last page,
+      // especially with query params — treat as end of collection.
+      if (page > 1 && (res.status === 400 || res.status === 404)) {
+        break;
+      }
       throw new Error(`WP API error ${res.status}: ${url.toString()}`);
     }
 
     const chunk = (await res.json()) as T[];
     if (!Array.isArray(chunk) || chunk.length === 0) break;
     all.push(...chunk);
+    // Short page = no further pages — avoids a follow-up request that many hosts answer with 400.
+    if (chunk.length < perPage) break;
     page += 1;
   }
 
