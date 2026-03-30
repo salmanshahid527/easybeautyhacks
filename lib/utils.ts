@@ -25,6 +25,18 @@ export function formatDateShort(dateString?: string): string {
   });
 }
 
+export function formatDateTimeShort(dateString?: string): string {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export function readTime(content?: string): string {
   if (!content) return "3 min read";
   const words = content.replace(/<[^>]*>/g, "").trim().split(/\s+/).length;

@@ -30,7 +30,7 @@ export function PostGrid({ posts, columns = 3, className }: PostGridProps) {
       )}
     >
       {posts.map((post, i) => (
-        <motion.div key={post._id} variants={fadeUpVariant}>
+        <motion.div key={post._id} variants={fadeUpVariant} className="h-full">
           <PostCard post={post} priority={i < 3} />
         </motion.div>
       ))}

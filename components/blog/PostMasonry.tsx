@@ -14,8 +14,8 @@ export function PostMasonry({ posts }: PostMasonryProps) {
 
   return (
     <div
-      className="columns-1 sm:columns-2 lg:columns-3 gap-6"
-      style={{ columnFill: "balance" }}
+      className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      style={{}}
     >
       {posts.map((post, i) => (
         <motion.div
@@ -24,7 +24,7 @@ export function PostMasonry({ posts }: PostMasonryProps) {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="break-inside-avoid mb-6"
+          className="h-full"
         >
           <PostCard post={post} priority={i < 3} />
         </motion.div>

@@ -8,13 +8,13 @@ export interface Post {
   featuredImageAlt?: string;
   featured?: boolean;
   publishedAt?: string;
+  author?: { name: string; image?: string };
   /** ISO date of last WP modification — used for sitemap lastModified */
   modifiedAt?: string;
 }
 
 export interface PostDetail extends Post {
   body?: string;
-  author?: { name: string; image?: string };
   modifiedAt?: string;
 }
 

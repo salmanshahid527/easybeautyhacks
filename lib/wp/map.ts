@@ -5,6 +5,7 @@ import { decodeHtmlEntities, stripHtml, rewriteWpUrlsToSiteUrl } from "@/lib/htm
 export function mapWpPostToPost(wp: WpPost): Post {
   const category = wp._embedded?.["wp:term"]?.[0]?.[0];
   const featuredMedia = wp._embedded?.["wp:featuredmedia"]?.[0];
+  const author = wp._embedded?.author?.[0];
 
   return {
     _id: String(wp.id),
@@ -18,6 +19,9 @@ export function mapWpPostToPost(wp: WpPost): Post {
     featuredImageAlt: featuredMedia?.alt_text,
     featured: !!wp.sticky,
     publishedAt: wp.date,
+    author: author
+      ? { name: author.name, image: author.avatar_urls?.[96] ?? author.avatar_urls?.[48] }
+      : undefined,
     modifiedAt: wp.modified ?? wp.date,
   };
 }

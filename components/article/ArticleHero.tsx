@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Calendar, Clock, ChevronRight } from "lucide-react";
-import { formatDate, readTime } from "@/lib/utils";
+import { formatDateTimeShort, readTime } from "@/lib/utils";
 import type { PostDetail } from "@/types";
 
 interface ArticleHeroProps {
@@ -92,7 +92,9 @@ export function ArticleHero({ post }: ArticleHeroProps) {
           )}
           <div className="flex items-center gap-1.5">
             <Calendar size={14} />
-            <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+            <time dateTime={post.publishedAt}>
+              {formatDateTimeShort(post.publishedAt)}
+            </time>
           </div>
           <div className="flex items-center gap-1.5">
             <Clock size={14} />

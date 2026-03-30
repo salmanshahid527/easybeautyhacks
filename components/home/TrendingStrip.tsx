@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { formatDateShort } from "@/lib/utils";
+import { formatDateTimeShort } from "@/lib/utils";
 import { fadeUpVariant, staggerContainer } from "@/lib/animations";
 import type { Post } from "@/types";
 
@@ -84,7 +84,8 @@ export function TrendingStrip({ posts }: TrendingStripProps) {
                       {post.title}
                     </h3>
                     <p className="text-xs text-foreground-subtle mt-1">
-                      {formatDateShort(post.publishedAt)}
+                      {post.author?.name ? `By ${post.author.name} · ` : ""}
+                      {formatDateTimeShort(post.publishedAt)}
                     </p>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Clock } from "lucide-react";
-import { formatDateShort, readTime, cn } from "@/lib/utils";
+import { Calendar, Clock, User } from "lucide-react";
+import { formatDateTimeShort, readTime, cn } from "@/lib/utils";
 import type { Post } from "@/types";
 
 interface PostCardProps {
@@ -20,7 +20,7 @@ export function PostCard({
   return (
     <article
       className={cn(
-        "group bg-card rounded-xl overflow-hidden border border-border card-hover img-zoom shadow-sm",
+        "group bg-card rounded-xl overflow-hidden border border-border card-hover img-zoom shadow-sm h-full flex flex-col",
         className
       )}
     >
@@ -65,7 +65,7 @@ export function PostCard({
       </Link>
 
       {/* Body */}
-      <div className="p-4 sm:p-5">
+      <div className="p-4 sm:p-5 flex-1 flex flex-col">
         {post.category && (
           <Link
             href={`/category/${post.category.slug}`}
@@ -92,10 +92,21 @@ export function PostCard({
           </p>
         )}
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-1.5 text-xs text-foreground-subtle">
             <Calendar size={11} />
-            <time dateTime={post.publishedAt}>{formatDateShort(post.publishedAt)}</time>
+            <time dateTime={post.publishedAt}>
+              {formatDateTimeShort(post.publishedAt)}
+            </time>
+            {post.author?.name ? (
+              <>
+                <span aria-hidden="true">•</span>
+                <span className="inline-flex items-center gap-1">
+                  <User size={11} />
+                  {post.author.name}
+                </span>
+              </>
+            ) : null}
           </div>
           <Link
             href={`/${post.slug}`}
