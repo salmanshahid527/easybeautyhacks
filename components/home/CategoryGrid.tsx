@@ -119,73 +119,22 @@ export function CategoryGrid({ categories, postImages = {} }: CategoryGridProps)
 
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 auto-rows-[200px]">
-          {/* Cell 1-2: Skincare (tall, spans 2 cols + 2 rows) */}
-          {cats[0] && (
-            <div className="col-span-2 row-span-2">
+          {cats.map((cat, idx) => (
+            <div key={cat._id} className="col-span-1">
               <CategoryCell
-                category={cats[0]}
-                imageUrl={postImages[cats[0].slug]}
-                tall
-                gradientClass={FALLBACK_GRADIENT[0]}
-                index={0}
+                category={cat}
+                imageUrl={postImages[cat.slug]}
+                gradientClass={FALLBACK_GRADIENT[idx % FALLBACK_GRADIENT.length]}
+                index={idx}
               />
             </div>
-          )}
-
-          {/* Cell 3: top */}
-          {cats[1] && (
-            <div className="col-span-1">
-              <CategoryCell
-                category={cats[1]}
-                imageUrl={postImages[cats[1].slug]}
-                gradientClass={FALLBACK_GRADIENT[1]}
-                index={1}
-              />
-            </div>
-          )}
-
-          {/* Cell 4-5: Hair Care tall */}
-          {cats[2] && (
-            <div className="col-span-2 row-span-2">
-              <CategoryCell
-                category={cats[2]}
-                imageUrl={postImages[cats[2].slug]}
-                tall
-                gradientClass={FALLBACK_GRADIENT[2]}
-                index={2}
-              />
-            </div>
-          )}
-
-          {/* Cell 6: small */}
-          {cats[3] && (
-            <div className="col-span-1">
-              <CategoryCell
-                category={cats[3]}
-                imageUrl={postImages[cats[3].slug]}
-                gradientClass={FALLBACK_GRADIENT[3]}
-                index={3}
-              />
-            </div>
-          )}
-
-          {/* Bottom row: cats 4 + view all */}
-          {cats[4] && (
-            <div className="col-span-1">
-              <CategoryCell
-                category={cats[4]}
-                imageUrl={postImages[cats[4].slug]}
-                gradientClass={FALLBACK_GRADIENT[4]}
-                index={4}
-              />
-            </div>
-          )}
+          ))}
 
           {/* View All cell */}
           <div className="col-span-1">
             <CategoryCell
               gradientClass="from-primary/20 to-primary-muted/30"
-              index={5}
+              index={cats.length}
             />
           </div>
         </div>
