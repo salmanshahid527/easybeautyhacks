@@ -1,73 +1,83 @@
 "use client";
 
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { usePosts } from "@/hooks/usePosts";
+import { usePosts, type BlogPostsQueryData } from "@/hooks/usePosts";
 import { useCategories } from "@/hooks/useCategories";
 import { PostGrid } from "./PostGrid";
 import { PostMasonry } from "./PostMasonry";
+import { BlogPagination, buildBlogListHref } from "./BlogPagination";
 import { LayoutGrid, Columns } from "lucide-react";
-import type { Post, Category } from "@/types";
+import type { Category } from "@/types";
 import { cn } from "@/lib/utils";
+import { BLOG_POSTS_PER_PAGE } from "@/lib/blogPagination";
 
 interface PostListProps {
-  initialPosts?: Post[];
+  initialBlogPage?: BlogPostsQueryData;
   initialCategories?: Category[];
 }
 
-export function PostList({ initialPosts, initialCategories }: PostListProps) {
-  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
+export function PostList({ initialBlogPage, initialCategories }: PostListProps) {
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("grid");
+  const searchParams = useSearchParams();
+  const rawPage = searchParams.get("page");
+  const page = Math.max(1, Number.parseInt(rawPage ?? "1", 10) || 1);
+  const categorySlug = searchParams.get("category")?.trim() || undefined;
+  const categoryId =
+    categorySlug && initialCategories?.length
+      ? initialCategories.find((c) => c.slug === categorySlug)?.id
+      : undefined;
 
-  const { data: allPosts = [] } = usePosts({ initialData: initialPosts });
+  const { data, isLoading } = usePosts({
+    page,
+    perPage: BLOG_POSTS_PER_PAGE,
+    categoryId,
+    initialData: initialBlogPage,
+  });
   const { data: categories = [] } = useCategories(initialCategories);
 
-  const filtered = activeCategorySlug
-    ? allPosts.filter((p) => p.category?.slug === activeCategorySlug)
-    : allPosts;
+  const posts = data?.posts ?? [];
+  const total = data?.total;
+  const totalPages = Math.max(1, data?.totalPages ?? 1);
 
   return (
     <div>
-      {/* Filter + view toggle */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
-        {/* Category filter pills */}
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveCategorySlug(null)}
+          <Link
+            href="/blog"
             className={cn(
-              "px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
-              !activeCategorySlug
-                ? "bg-primary text-primary-foreground border-primary"
+              "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+              !categorySlug
+                ? "border-primary bg-primary text-primary-foreground"
                 : "border-border text-foreground-muted hover:border-primary hover:text-primary"
             )}
           >
             All
-          </button>
+          </Link>
           {categories.map((cat) => (
-            <button
+            <Link
               key={cat._id}
-              onClick={() =>
-                setActiveCategorySlug(
-                  activeCategorySlug === cat.slug ? null : cat.slug
-                )
-              }
+              href={buildBlogListHref(1, cat.slug)}
               className={cn(
-                "px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
-                activeCategorySlug === cat.slug
-                  ? "bg-primary text-primary-foreground border-primary"
+                "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors capitalize",
+                categorySlug === cat.slug
+                  ? "border-primary bg-primary text-primary-foreground"
                   : "border-border text-foreground-muted hover:border-primary hover:text-primary"
               )}
             >
               {cat.title}
-            </button>
+            </Link>
           ))}
         </div>
 
-        {/* View mode toggle */}
         <div className="flex gap-1">
           <button
+            type="button"
             onClick={() => setViewMode("grid")}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "rounded-lg p-2 transition-colors",
               viewMode === "grid"
                 ? "bg-primary-muted text-primary"
                 : "text-foreground-muted hover:text-foreground"
@@ -77,9 +87,10 @@ export function PostList({ initialPosts, initialCategories }: PostListProps) {
             <LayoutGrid size={18} />
           </button>
           <button
+            type="button"
             onClick={() => setViewMode("masonry")}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "rounded-lg p-2 transition-colors",
               viewMode === "masonry"
                 ? "bg-primary-muted text-primary"
                 : "text-foreground-muted hover:text-foreground"
@@ -91,23 +102,36 @@ export function PostList({ initialPosts, initialCategories }: PostListProps) {
         </div>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-foreground-muted mb-6">
-        {filtered.length} {filtered.length === 1 ? "article" : "articles"}
-        {activeCategorySlug && (
-          <> in <span className="text-primary font-medium capitalize">{activeCategorySlug.replace(/-/g, " ")}</span></>
-        )}
+      <p className="mb-6 text-sm text-foreground-muted">
+        {typeof total === "number"
+          ? `${total} ${total === 1 ? "article" : "articles"}`
+          : `${posts.length} on this page`}
+        {categorySlug ? (
+          <>
+            {" "}
+            in{" "}
+            <span className="font-medium capitalize text-primary">
+              {categorySlug.replace(/-/g, " ")}
+            </span>
+          </>
+        ) : null}
       </p>
 
-      {filtered.length === 0 ? (
+      {isLoading ? (
+        <div className="py-16 text-center text-foreground-muted">Loading…</div>
+      ) : posts.length === 0 ? (
         <div className="py-16 text-center">
           <p className="text-foreground-muted">No posts found. Check back soon!</p>
         </div>
       ) : viewMode === "grid" ? (
-        <PostGrid posts={filtered} />
+        <PostGrid posts={posts} />
       ) : (
-        <PostMasonry posts={filtered} />
+        <PostMasonry posts={posts} />
       )}
+
+      {!isLoading && posts.length > 0 ? (
+        <BlogPagination page={page} totalPages={totalPages} categorySlug={categorySlug} />
+      ) : null}
     </div>
   );
 }

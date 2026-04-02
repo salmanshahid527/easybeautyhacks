@@ -39,6 +39,69 @@ export async function fetchWp<T>(
   return res.json() as Promise<T>;
 }
 
+export type WpPaginatedResult<T> = { data: T; totalPages: number; total: number };
+
+export async function fetchWpPaginated<T>(
+  path: string,
+  params?: Record<string, string | number | boolean | undefined>
+): Promise<WpPaginatedResult<T>> {
+  const url = new URL(`${apiBase()}${path}`);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  }
+  const res = await fetch(url.toString(), {
+    next: { revalidate: 60 },
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    if (res.status === 404) return { data: [] as unknown as T, totalPages: 0, total: 0 };
+    throw new Error(`WP API error ${res.status}: ${url.toString()}`);
+  }
+  const total = Number.parseInt(res.headers.get("X-WP-Total") ?? "0", 10);
+  const totalPagesRaw = Number.parseInt(res.headers.get("X-WP-TotalPages") ?? "0", 10);
+  const totalPages = Number.isFinite(totalPagesRaw) ? Math.max(0, totalPagesRaw) : 0;
+  const data = (await res.json()) as T;
+  return {
+    data,
+    totalPages,
+    total: Number.isFinite(total) ? total : 0,
+  };
+}
+
+export async function fetchWpClientPaginated<T>(
+  path: string,
+  params?: Record<string, string | number | boolean | undefined>
+): Promise<WpPaginatedResult<T>> {
+  const url = new URL(`${apiBase()}${path}`);
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  }
+  const res = await fetch(url.toString(), {
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    if (res.status === 404) return { data: [] as unknown as T, totalPages: 0, total: 0 };
+    throw new Error(`WP API error ${res.status}`);
+  }
+  const total = Number.parseInt(res.headers.get("X-WP-Total") ?? "0", 10);
+  const totalPagesRaw = Number.parseInt(res.headers.get("X-WP-TotalPages") ?? "0", 10);
+  const totalPages = Number.isFinite(totalPagesRaw) ? Math.max(0, totalPagesRaw) : 0;
+  const data = (await res.json()) as T;
+  return {
+    data,
+    totalPages,
+    total: Number.isFinite(total) ? total : 0,
+  };
+}
+
 /** WordPress REST max for `per_page` on most hosts */
 const WP_MAX_PER_PAGE = 100;
 

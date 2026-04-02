@@ -1,5 +1,6 @@
 import { cache } from "react";
-import { fetchWp, fetchWpCollectionAll } from "./client";
+import { BLOG_POSTS_PER_PAGE } from "@/lib/blogPagination";
+import { fetchWp, fetchWpCollectionAll, fetchWpPaginated } from "./client";
 import { mapWpPostToPost, mapWpPostToPostDetail } from "./map";
 import { processPostBody } from "@/lib/html";
 import type { WpPost } from "./types";
@@ -19,6 +20,7 @@ export const getPostBySlug = cache(async function (
   return detail;
 });
 
+/** All posts (paginated walk) — for static params / sitemap-style lists only. */
 export const getPostsForBlog = cache(async function (): Promise<Post[]> {
   const data = await fetchWp<WpPost[]>("/posts", {
     _embed: 1,
@@ -28,6 +30,51 @@ export const getPostsForBlog = cache(async function (): Promise<Post[]> {
     status: "publish",
   });
   return data.map(mapWpPostToPost);
+});
+
+export type BlogPostsPage = {
+  posts: Post[];
+  totalPages: number;
+  total: number;
+};
+
+export const getLatestPostForBlogMeta = cache(async function (): Promise<Post | null> {
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    per_page: 1,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+  const wp = data[0];
+  return wp ? mapWpPostToPost(wp) : null;
+});
+
+export const getPostsForBlogPage = cache(async function (options: {
+  page: number;
+  perPage?: number;
+  categoryId?: number;
+}): Promise<BlogPostsPage> {
+  const perPage = options.perPage ?? BLOG_POSTS_PER_PAGE;
+  const page = Math.max(1, options.page);
+  try {
+    const params: Record<string, string | number | boolean> = {
+      _embed: 1,
+      per_page: perPage,
+      page,
+      orderby: "date",
+      order: "desc",
+      status: "publish",
+    };
+    if (options.categoryId != null) {
+      params.categories = options.categoryId;
+    }
+    const { data, totalPages, total } = await fetchWpPaginated<WpPost[]>("/posts", params);
+    const posts = Array.isArray(data) ? data.map(mapWpPostToPost) : [];
+    return { posts, totalPages, total };
+  } catch {
+    return { posts: [], totalPages: 0, total: 0 };
+  }
 });
 
 /** Every published post (paginated) — lightweight fields for sitemap */

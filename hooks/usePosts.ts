@@ -1,21 +1,38 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchWpClient } from "@/lib/wp/client";
+import { BLOG_POSTS_PER_PAGE } from "@/lib/blogPagination";
+import { fetchWpClient, fetchWpClientPaginated } from "@/lib/wp/client";
 import { mapWpPostToPost, mapWpPostToPostDetail } from "@/lib/wp/map";
 import { processPostBody } from "@/lib/html";
 import type { WpPost } from "@/lib/wp/types";
 import type { Post, PostDetail } from "@/types";
 
-async function fetchPostsForBlog(): Promise<Post[]> {
-  const data = await fetchWpClient<WpPost[]>("/posts", {
-    _embed: 1,
-    per_page: 50,
-    orderby: "date",
-    order: "desc",
-    status: "publish",
-  });
-  return data.map(mapWpPostToPost);
+export type BlogPostsQueryData = { posts: Post[]; totalPages: number; total: number };
+
+async function fetchPostsForBlogPage(options: {
+  page: number;
+  perPage: number;
+  categoryId?: number;
+}): Promise<BlogPostsQueryData> {
+  try {
+    const params: Record<string, string | number | boolean> = {
+      _embed: 1,
+      per_page: options.perPage,
+      page: options.page,
+      orderby: "date",
+      order: "desc",
+      status: "publish",
+    };
+    if (options.categoryId != null) {
+      params.categories = options.categoryId;
+    }
+    const { data, totalPages, total } = await fetchWpClientPaginated<WpPost[]>("/posts", params);
+    const posts = Array.isArray(data) ? data.map(mapWpPostToPost) : [];
+    return { posts, totalPages, total };
+  } catch {
+    return { posts: [], totalPages: 0, total: 0 };
+  }
 }
 
 async function fetchPostsForCategory(
@@ -76,12 +93,21 @@ async function fetchPostsForMultipleCategories(
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export function usePosts(options?: { initialData?: Post[] }) {
-  const { initialData } = options ?? {};
-  const hasInitial = initialData !== undefined;
+export function usePosts(options?: {
+  page?: number;
+  perPage?: number;
+  categoryId?: number;
+  initialData?: BlogPostsQueryData;
+}) {
+  const page = Math.max(1, options?.page ?? 1);
+  const perPage = options?.perPage ?? BLOG_POSTS_PER_PAGE;
+  const categoryId = options?.categoryId;
+  const initialData = options?.initialData;
+  const hasInitial = initialData !== undefined && initialData !== null;
+  const cacheKey = categoryId != null ? `cat:${categoryId}` : "all";
   return useQuery({
-    queryKey: ["posts", "blog"],
-    queryFn: fetchPostsForBlog,
+    queryKey: ["posts", "blog", cacheKey, page, perPage],
+    queryFn: () => fetchPostsForBlogPage({ page, perPage, categoryId }),
     initialData: hasInitial ? initialData : undefined,
     initialDataUpdatedAt: hasInitial ? Date.now() : undefined,
     staleTime: hasInitial ? Infinity : 0,

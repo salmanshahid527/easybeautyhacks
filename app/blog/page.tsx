@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getPostsForBlog } from "@/lib/wp/post";
+import { BLOG_POSTS_PER_PAGE } from "@/lib/blogPagination";
+import { getLatestPostForBlogMeta, getPostsForBlogPage } from "@/lib/wp/post";
 import { getCategories } from "@/lib/wp/categories";
 import { PostList } from "@/components/blog/PostList";
 import { Container } from "@/components/layout/Container";
@@ -9,8 +10,8 @@ import { buildOgImage } from "@/lib/seo";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const posts = await getPostsForBlog();
-  const firstImage = posts[0]?.featuredImage;
+  const latest = await getLatestPostForBlogMeta();
+  const firstImage = latest?.featuredImage;
 
   return {
     title: "Beauty Blog — Tips & Hacks",
@@ -33,11 +34,24 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BlogPage() {
-  const [initialPosts, initialCategories] = await Promise.all([
-    getPostsForBlog(),
-    getCategories(),
-  ]);
+type BlogPageProps = {
+  searchParams: Promise<{ page?: string; category?: string }>;
+};
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const sp = await searchParams;
+  const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
+  const categorySlug = sp.category?.trim() || undefined;
+  const initialCategories = await getCategories();
+  const categoryId =
+    categorySlug && initialCategories.length > 0
+      ? initialCategories.find((c) => c.slug === categorySlug)?.id
+      : undefined;
+  const initialBlogPage = await getPostsForBlogPage({
+    page,
+    perPage: BLOG_POSTS_PER_PAGE,
+    categoryId,
+  });
 
   return (
     <div className="section-gap">
@@ -53,10 +67,7 @@ export default async function BlogPage() {
           </p>
         </div>
 
-        <PostList
-          initialPosts={initialPosts}
-          initialCategories={initialCategories}
-        />
+        <PostList initialBlogPage={initialBlogPage} initialCategories={initialCategories} />
       </Container>
     </div>
   );
