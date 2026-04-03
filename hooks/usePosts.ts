@@ -57,7 +57,7 @@ async function fetchPostBySlug(slug: string): Promise<PostDetail | null> {
   });
   if (!data[0]) return null;
   const detail = mapWpPostToPostDetail(data[0]);
-  detail.body = processPostBody(detail.body);
+  detail.body = processPostBody(detail.body, detail.featuredImage);
   return detail;
 }
 

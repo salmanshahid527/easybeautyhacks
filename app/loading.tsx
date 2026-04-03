@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div className="section-gap">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Page header skeleton */}
         <div className="mb-10 space-y-3">
           <div className="h-3 w-24 rounded-full bg-muted/40 animate-pulse" />

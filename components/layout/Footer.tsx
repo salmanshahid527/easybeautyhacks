@@ -43,7 +43,7 @@ export function Footer({ initialCategories }: FooterProps) {
 
   return (
     <footer className="bg-foreground text-card pt-12 pb-6 mt-auto">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           {/* Brand */}
           <div className="lg:col-span-1">

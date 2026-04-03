@@ -33,7 +33,7 @@ export function CategorySections({
             key={cat._id}
             className={`mb-16 ${isEven ? "" : "bg-background-alt py-12 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 rounded-2xl"}`}
           >
-            <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
               <motion.div
                 variants={fadeUpVariant}
                 initial="hidden"

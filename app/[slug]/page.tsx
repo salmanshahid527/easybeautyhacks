@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPageBySlug } from "@/lib/wp/pages";
-import { getPostBySlug, getPostsForBlog } from "@/lib/wp/post";
+import { getPostBySlug, getPostsForBlog, getRelatedPostsByCategory } from "@/lib/wp/post";
 import { fetchWpCollectionAll } from "@/lib/wp/client";
 import type { WpPage } from "@/lib/wp/types";
+import type { Post } from "@/types";
 import { WpPageContent } from "@/components/pages/WpPageContent";
 import { Container } from "@/components/layout/Container";
 import { BlogPostView } from "@/components/blog/BlogPostView";
@@ -118,6 +119,18 @@ export default async function SlugPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  // Fetch related posts if category exists
+  const relatedPosts: Post[] = [];
+  if (post.category?.id) {
+    try {
+      const posts = await getRelatedPostsByCategory(post.category.id, post.slug, 4);
+      relatedPosts.push(...posts);
+    } catch (err) {
+      // Silently fail if we can't get related posts
+      console.log("Could not fetch related posts:", err);
+    }
+  }
+
   const postUrl = `${SITE_URL}/${post.slug}`;
   const breadcrumbs = [
     { name: "Home", url: `${SITE_URL}/` },
@@ -140,7 +153,7 @@ export default async function SlugPage({ params }: Props) {
         categoryTitle={post.category?.title}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />
-      <BlogPostView slug={slug} initialPost={post} />
+      <BlogPostView slug={slug} initialPost={post} relatedPosts={relatedPosts} />
     </>
   );
 }

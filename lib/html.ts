@@ -1,4 +1,4 @@
-const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "";
+const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "api.easybeautyhacks.com/wp-json";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://easybeautyhacks.com";
 
 /** Decode common HTML entities */
@@ -56,6 +56,87 @@ export function sanitizeHtmlForProse(html: string): string {
 }
 
 /**
+ * Remove featured image from article body HTML.
+ * Removes only the FIRST/FEATURED image at the beginning of the content.
+ * Preserves all in-content images to maintain article flow.
+ */
+export function removeFeaturedImageFromBody(html: string, featuredImageUrl?: string): string {
+  if (!html) return html;
+
+  // Only remove the featured image at the START of the content
+  // Remove figure tag with featured image from the beginning
+  if (featuredImageUrl) {
+    const escapedUrl = featuredImageUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    
+    // Remove ONLY the first figure containing the featured image URL at the start
+    html = html.replace(
+      new RegExp(`^\\s*<figure[^>]*>\\s*<img[^>]*src=["']${escapedUrl}["'][^>]*>[^<]*<\\/figure>\\s*`, "i"),
+      ""
+    );
+    
+    // If no figure, remove ONLY the first img tag at the start with this URL
+    if (html !== removeFirstImageTag(html, escapedUrl)) {
+      html = removeFirstImageTag(html, escapedUrl);
+    }
+  }
+
+  // Also remove any img/figure tags at the very beginning of content (before first real paragraph)
+  html = html.replace(/^\s*<figure[^>]*>\s*<img[^>]*>\s*<\/figure>\s*/i, "");
+  html = html.replace(/^\s*<img[^>]*(src=["'][^"']*["'])[^>]*>\s*/i, "");
+  
+  return html;
+}
+
+/**
+ * Helper: Remove only the FIRST img tag with matching URL.
+ */
+function removeFirstImageTag(html: string, escapedUrl: string): string {
+  return html.replace(
+    new RegExp(`^\\s*<img[^>]*src=["']${escapedUrl}["'][^>]*>\\s*`, "i"),
+    ""
+  );
+}
+
+/**
+ * Extract FAQ items from HTML content (expects h3 tags followed by p tags).
+ * Returns array of {question, answer} pairs.
+ */
+export function extractFAQFromHtml(html: string): Array<{ question: string; answer: string }> {
+  const faqItems: Array<{ question: string; answer: string }> = [];
+  
+  // Match patterns like: <h3>Question?</h3><p>Answer text.</p>
+  const h3Pattern = /<h3[^>]*>([^<]+)<\/h3>/gi;
+  const pPattern = /<p[^>]*>([^<]+)<\/p>/gi;
+  
+  // Find all h3 and p tags
+  const h3Matches = Array.from(html.matchAll(h3Pattern)).map(m => ({
+    text: stripHtml(m[1]),
+    index: m.index || 0
+  }));
+  
+  const pMatches = Array.from(html.matchAll(pPattern)).map(m => ({
+    text: stripHtml(m[1]),
+    index: m.index || 0
+  }));
+  
+  // Pair h3 (questions) with following p (answers)
+  for (let i = 0; i < h3Matches.length; i++) {
+    const question = h3Matches[i];
+    // Find the next p tag that comes after this h3
+    const nextP = pMatches.find(p => p.index > question.index);
+    
+    if (nextP && question.text && nextP.text) {
+      faqItems.push({
+        question: question.text,
+        answer: nextP.text
+      });
+    }
+  }
+  
+  return faqItems;
+}
+
+/**
  * Add loading="lazy" and decoding="async" to all prose images except the
  * first (which may be above the fold and should load eagerly).
  */
@@ -76,11 +157,12 @@ export function addLazyLoadingToProseImages(html: string): string {
   });
 }
 
-/** Full pipeline: sanitize → rewrite URLs → force HTTPS → lazy-load images */
-export function processPostBody(html: string | undefined): string | undefined {
+/** Full pipeline: sanitize → rewrite URLs → force HTTPS → remove featured image → lazy-load images */
+export function processPostBody(html: string | undefined, featuredImageUrl?: string): string | undefined {
   if (!html?.trim()) return html;
   const sanitized = sanitizeHtmlForProse(html);
   const rewritten = rewriteWpUrlsToSiteUrl(sanitized);
   const httpsed = forceHttpsForImgSrc(rewritten);
-  return addLazyLoadingToProseImages(httpsed);
+  const noFeatured = removeFeaturedImageFromBody(httpsed, featuredImageUrl);
+  return addLazyLoadingToProseImages(noFeatured);
 }

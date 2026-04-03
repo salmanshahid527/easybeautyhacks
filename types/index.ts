@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   slug: string;
   excerpt?: string;
-  category?: { title: string; slug: string };
+  category?: { id?: number; title: string; slug: string };
   featuredImage?: string;
   featuredImageAlt?: string;
   featured?: boolean;

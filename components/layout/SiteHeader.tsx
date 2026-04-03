@@ -103,7 +103,7 @@ export function SiteHeader({
       {/* Categories bar (desktop) */}
       {categories.length > 0 && (
         <div className="hidden lg:block border-t border-border bg-background-alt">
-          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-6 h-10 overflow-x-auto scrollbar-hide">
               {categories.slice(0, 10).map((cat) => (
                 <Link
