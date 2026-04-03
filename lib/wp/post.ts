@@ -15,7 +15,7 @@ export const getPostBySlug = cache(async function (
   });
   if (!data[0]) return null;
   const detail = mapWpPostToPostDetail(data[0]);
-  detail.body = processPostBody(detail.body);
+  detail.body = processPostBody(detail.body, detail.featuredImage);
   return detail;
 });
 
@@ -126,6 +126,27 @@ export const getPostsForMultipleCategories = cache(async function (
   }
 
   return result;
+});
+
+/** Get related posts by category ID (excluding the current post) */
+export const getRelatedPostsByCategory = cache(async function (
+  categoryId: number,
+  currentPostSlug: string,
+  limit: number = 4
+): Promise<Post[]> {
+  const data = await fetchWp<WpPost[]>("/posts", {
+    _embed: 1,
+    categories: categoryId,
+    per_page: limit + 5,
+    orderby: "date",
+    order: "desc",
+    status: "publish",
+  });
+  
+  return data
+    .filter((wp) => wp.slug !== currentPostSlug)
+    .slice(0, limit)
+    .map(mapWpPostToPost);
 });
 
 export async function searchPosts(query: string): Promise<Post[]> {

@@ -45,11 +45,16 @@ const imageHostSeen = new Set<string>();
 const remotePatterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> = [];
 pushWpImageHosts(remotePatterns, imageHostSeen, wpHostname);
 pushWpImageHosts(remotePatterns, imageHostSeen, siteHostname);
+
+// Add explicit patterns for common WordPress setups
 remotePatterns.push(
   { protocol: "https", hostname: "secure.gravatar.com", pathname: "/**" },
   { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
   { protocol: "https", hostname: "*.hostingersite.com", pathname: "/**" },
-  { protocol: "https", hostname: "*.wordpress.com", pathname: "/**" }
+  { protocol: "https", hostname: "*.wordpress.com", pathname: "/**" },
+  // Add wildcard for all easybeautyhacks subdomains
+  { protocol: "https", hostname: "*.easybeautyhacks.com", pathname: "/**" },
+  { protocol: "http", hostname: "*.easybeautyhacks.com", pathname: "/**" }
 );
 
 const nextConfig: NextConfig = {

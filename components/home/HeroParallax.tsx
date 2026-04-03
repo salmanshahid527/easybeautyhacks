@@ -57,7 +57,7 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-secondary/10 blur-3xl translate-y-1/3 -translate-x-1/4" />
       </motion.div>
 
-      <div className="relative z-10 w-full mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-20">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text — CSS fade-up animations, parallax y via motion */}
           <motion.div style={{ y: textY }}>

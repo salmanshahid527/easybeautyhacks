@@ -100,7 +100,7 @@ export function CategoryGrid({ categories, postImages = {} }: CategoryGridProps)
 
   return (
     <section className="py-16 bg-background-alt">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="flex items-end justify-between mb-8">
           <div>

@@ -13,7 +13,7 @@ export function mapWpPostToPost(wp: WpPost): Post {
     slug: wp.slug,
     excerpt: decodeHtmlEntities(stripHtml(wp.excerpt?.rendered ?? "")),
     category: category
-      ? { title: category.name, slug: category.slug }
+      ? { id: category.id, title: category.name, slug: category.slug }
       : undefined,
     featuredImage: featuredMedia?.source_url,
     featuredImageAlt: featuredMedia?.alt_text,
