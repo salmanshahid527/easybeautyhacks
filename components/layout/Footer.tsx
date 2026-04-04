@@ -121,7 +121,6 @@ export function Footer({ initialCategories }: FooterProps) {
                 { label: "Blog", href: "/blog" },
                 { label: "About", href: "/about" },
                 { label: "Contact", href: "/contact" },
-                { label: "Shop", href: "/shop" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

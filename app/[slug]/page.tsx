@@ -20,7 +20,6 @@ const RESERVED_FOR_STATIC_PARAMS = new Set([
   "about",
   "contact",
   "privacy",
-  "shop",
   "blog",
   "search",
   "category",

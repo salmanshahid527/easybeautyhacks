@@ -48,12 +48,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: feedFreshness,
     },
     {
-      path: "/shop",
-      changeFrequency: "weekly",
-      priority: 0.6,
-      lastModified: wpModByPath.get("/shop") ?? sitelaunchDate,
-    },
-    {
       path: "/about",
       changeFrequency: "monthly",
       priority: 0.5,

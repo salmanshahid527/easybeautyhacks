@@ -6,7 +6,7 @@ import type { Page } from "@/types";
 import { SLUG_FALLBACKS } from "@/lib/constants";
 
 /** WP pages that map 1:1 to app routes under `SITE_URL` */
-const WP_PAGE_SLUGS_FOR_SITEMAP = ["about", "contact", "privacy", "shop"] as const;
+const WP_PAGE_SLUGS_FOR_SITEMAP = ["about", "contact", "privacy"] as const;
 
 function mapWpPageToPage(wp: WpPage): Page {
   return {

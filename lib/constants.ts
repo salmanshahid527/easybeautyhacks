@@ -11,7 +11,7 @@ export const POSTS_PER_CATEGORY_HOME = 4;
 
 export const CATEGORIES_HOME = ["skincare", "makeup", "hair-care", "nail-art", "wellness"];
 
-export const NAV_PAGE_SLUGS = ["about", "contact", "privacy-policy", "shop"];
+export const NAV_PAGE_SLUGS = ["about", "contact", "privacy-policy"];
 
 export const SLUG_TO_PATH: Record<string, string> = {
   about: "/about",
@@ -19,7 +19,6 @@ export const SLUG_TO_PATH: Record<string, string> = {
   contact: "/contact",
   "contact-us": "/contact",
   "privacy-policy": "/privacy",
-  shop: "/shop",
 };
 
 export const SLUG_FALLBACKS: Record<string, string[]> = {
