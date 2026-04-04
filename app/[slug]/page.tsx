@@ -11,6 +11,7 @@ import { BlogPostView } from "@/components/blog/BlogPostView";
 import { ArticleJsonLd } from "@/components/seo/ArticleJsonLd";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { buildPostMetadata } from "@/lib/seo";
+import { fetchRankMathDescription } from "@/lib/wp/rankmath";
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE, SLUG_TO_PATH } from "@/lib/constants";
 
 export const revalidate = 60;
@@ -80,9 +81,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostBySlug(slug);
   if (!post) return { title: `Not found | ${SITE_NAME}` };
 
+  const rankMathDesc = await fetchRankMathDescription(slug);
+  const description = rankMathDesc || post.excerpt;
+
   const meta = buildPostMetadata({
     title: post.title,
-    description: post.excerpt,
+    description,
     slug: post.slug,
     imageUrl: post.featuredImage,
     publishedAt: post.publishedAt,
