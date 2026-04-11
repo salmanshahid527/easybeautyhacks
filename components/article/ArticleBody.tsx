@@ -15,7 +15,7 @@ export function ArticleBody({ html, featuredImageUrl }: ArticleBodyProps) {
   return (
     <article className="prose-beauty max-w-full w-full">
       <div
-        className="space-y-0 [&_p]:break-words [&_h2]:break-words [&_h3]:break-words [&_li]:break-words [&_a]:break-words"
+        className="article-prose-inner mx-auto w-full max-w-2xl space-y-0 px-0 sm:px-1 [&_p]:wrap-break-word [&_h2]:wrap-break-word [&_h3]:wrap-break-word [&_li]:wrap-break-word [&_a]:wrap-break-word"
         dangerouslySetInnerHTML={{ __html: cleanedHtml }}
       />
     </article>

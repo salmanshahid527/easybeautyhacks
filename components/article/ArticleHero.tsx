@@ -75,6 +75,22 @@ export function ArticleHero({ post }: ArticleHeroProps) {
           </p>
         )}
 
+        {post.featuredImage ? (
+          <div
+            className="relative mt-2 mb-10 w-full max-w-4xl overflow-hidden rounded-2xl border border-border/50 bg-muted/30 shadow-lg aspect-16/10 max-h-[min(70vw,440px)] sm:max-h-[440px] animate-fade-in-up"
+            style={{ animationDelay: "120ms" }}
+          >
+            <Image
+              src={post.featuredImage}
+              alt={post.featuredImageAlt || post.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 896px"
+              priority
+            />
+          </div>
+        ) : null}
+
         <div className="flex flex-wrap items-center gap-6 text-sm text-foreground-muted pt-6 border-t border-border/50 animate-slide-up" style={{animationDelay: '150ms'}}>
           {post.author && (
             <div className="flex items-center gap-2">

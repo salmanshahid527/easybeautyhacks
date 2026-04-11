@@ -56,45 +56,99 @@ export function sanitizeHtmlForProse(html: string): string {
 }
 
 /**
- * Remove featured image from article body HTML.
- * Removes only the FIRST/FEATURED image at the beginning of the content.
- * Preserves all in-content images to maintain article flow.
+ * WordPress often serves the same file with different host (api vs public), HTTPS, or
+ * `-1200x800` size suffixes in content vs featured media URL. Compare by normalized path.
+ */
+function normalizeImageKey(raw: string): string {
+  let u = decodeHtmlEntities(raw).trim();
+  if (!u) return "";
+  if (u.startsWith("//")) u = `https:${u}`;
+  try {
+    const baseHost = new URL(siteUrl).hostname;
+    const parsed = new URL(u, `https://${baseHost}`);
+    let path = parsed.pathname;
+    path = path.replace(/-\d+x\d+(?=\.[a-z0-9]+$)/i, "");
+    return path.toLowerCase();
+  } catch {
+    return u
+      .replace(/^https?:\/\/[^/]+/i, "")
+      .replace(/-\d+x\d+(?=\.[a-z0-9]+($|\?))/i, "")
+      .toLowerCase();
+  }
+}
+
+function collectImgUrlsFromTag(tag: string): string[] {
+  const urls: string[] = [];
+  const srcM = tag.match(/\bsrc=["']([^"']+)["']/i);
+  if (srcM?.[1]) urls.push(decodeHtmlEntities(srcM[1]));
+  const srcsetM = tag.match(/\bsrcset=["']([^"']+)["']/i);
+  if (srcsetM?.[1]) {
+    for (const part of srcsetM[1].split(",")) {
+      const piece = part.trim().split(/\s+/)[0];
+      if (piece) urls.push(decodeHtmlEntities(piece));
+    }
+  }
+  return urls;
+}
+
+function chunkContainsFeaturedImage(chunk: string, featuredKey: string): boolean {
+  if (!featuredKey) return false;
+  const imgTags = chunk.match(/<img\b[^>]*>/gi) ?? [];
+  for (const tag of imgTags) {
+    for (const url of collectImgUrlsFromTag(tag)) {
+      if (normalizeImageKey(url) === featuredKey) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Remove featured image from article body HTML (leading blocks only).
+ * Handles Gutenberg `wp-block-image`, `<figure>`, `<p><img></p>`, and bare `<img>`.
+ * Does not remove later in-content images.
  */
 export function removeFeaturedImageFromBody(html: string, featuredImageUrl?: string): string {
   if (!html) return html;
 
-  // Only remove the featured image at the START of the content
-  // Remove figure tag with featured image from the beginning
-  if (featuredImageUrl) {
-    const escapedUrl = featuredImageUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    
-    // Remove ONLY the first figure containing the featured image URL at the start
-    html = html.replace(
-      new RegExp(`^\\s*<figure[^>]*>\\s*<img[^>]*src=["']${escapedUrl}["'][^>]*>[^<]*<\\/figure>\\s*`, "i"),
-      ""
-    );
-    
-    // If no figure, remove ONLY the first img tag at the start with this URL
-    if (html !== removeFirstImageTag(html, escapedUrl)) {
-      html = removeFirstImageTag(html, escapedUrl);
+  let featured = featuredImageUrl?.trim();
+  if (featured) {
+    featured = rewriteWpUrlsToSiteUrl(featured);
+    if (/^http:\/\//i.test(featured)) featured = featured.replace(/^http:/i, "https:");
+  }
+  const featuredKey = featured ? normalizeImageKey(featured) : "";
+
+  let out = html;
+  const maxPasses = 12;
+
+  for (let pass = 0; pass < maxPasses; pass++) {
+    out = out.replace(/^\s*(?:<!--[\s\S]*?-->\s*)+/, "");
+    const leading = /^\s*/.exec(out)?.[0] ?? "";
+    const rest = out.slice(leading.length);
+    if (!rest.startsWith("<")) break;
+
+    const blockPatterns: RegExp[] = [
+      /^(<div\b[^>]*\bwp-block-image\b[^>]*>\s*(?:<figure\b[^>]*>[\s\S]*?<\/figure>\s*)<\/div>\s*)/i,
+      /^(<figure\b[^>]*>[\s\S]*?<\/figure>\s*)/i,
+      /^(<p\b[^>]*>\s*<img\b[^>]*\/>\s*<\/p>\s*)/i,
+      /^(<p\b[^>]*>\s*<img\b[^>]*>\s*<\/p>\s*)/i,
+      /^(<img\b[^>]*>\s*)/i,
+    ];
+
+    let removed = false;
+    for (const re of blockPatterns) {
+      const m = rest.match(re);
+      if (!m?.[1]) continue;
+      const chunk = m[1];
+      if (featuredKey && chunkContainsFeaturedImage(chunk, featuredKey)) {
+        out = leading + rest.slice(m[0].length);
+        removed = true;
+        break;
+      }
     }
+    if (!removed) break;
   }
 
-  // Also remove any img/figure tags at the very beginning of content (before first real paragraph)
-  html = html.replace(/^\s*<figure[^>]*>\s*<img[^>]*>\s*<\/figure>\s*/i, "");
-  html = html.replace(/^\s*<img[^>]*(src=["'][^"']*["'])[^>]*>\s*/i, "");
-  
-  return html;
-}
-
-/**
- * Helper: Remove only the FIRST img tag with matching URL.
- */
-function removeFirstImageTag(html: string, escapedUrl: string): string {
-  return html.replace(
-    new RegExp(`^\\s*<img[^>]*src=["']${escapedUrl}["'][^>]*>\\s*`, "i"),
-    ""
-  );
+  return out;
 }
 
 /**
