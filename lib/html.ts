@@ -1,9 +1,33 @@
 const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "api.easybeautyhacks.com/wp-json";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://easybeautyhacks.com";
 
+function decodeNumericHtmlEntities(text: string): string {
+  return text
+    .replace(/&amp;#(\d{1,7});/g, "&#$1;")
+    .replace(/&amp;#x([0-9a-f]{1,6});/gi, "&#x$1;")
+    .replace(/&#(\d{1,7});/g, (_, dec) => {
+      const n = Number.parseInt(dec, 10);
+      if (!Number.isFinite(n) || n < 1 || n > 0x10ffff) return _;
+      try {
+        return String.fromCodePoint(n);
+      } catch {
+        return _;
+      }
+    })
+    .replace(/&#x([0-9a-f]{1,6});/gi, (_, hex) => {
+      const n = Number.parseInt(hex, 16);
+      if (!Number.isFinite(n) || n < 1 || n > 0x10ffff) return _;
+      try {
+        return String.fromCodePoint(n);
+      } catch {
+        return _;
+      }
+    });
+}
+
 /** Decode common HTML entities */
 export function decodeHtmlEntities(text: string): string {
-  return text
+  const named = text
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
@@ -16,6 +40,7 @@ export function decodeHtmlEntities(text: string): string {
     .replace(/&#8211;/g, "\u2013")
     .replace(/&#8212;/g, "\u2014")
     .replace(/&nbsp;/g, " ");
+  return decodeNumericHtmlEntities(named);
 }
 
 /** Strip all HTML tags */
