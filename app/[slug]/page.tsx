@@ -122,6 +122,8 @@ export default async function SlugPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const seoDescription = (await fetchRankMathDescription(slug)) || post.excerpt;
+
   // Fetch related posts if category exists
   const relatedPosts: Post[] = [];
   if (post.category?.id) {
@@ -147,7 +149,7 @@ export default async function SlugPage({ params }: Props) {
     <>
       <ArticleJsonLd
         title={post.title}
-        description={post.excerpt}
+        description={seoDescription}
         slug={post.slug}
         datePublished={post.publishedAt}
         dateModified={post.modifiedAt}
