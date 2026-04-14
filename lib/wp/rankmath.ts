@@ -56,16 +56,28 @@ async function fetchRankMathDescriptionImpl(
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const u = new URL(`${apiOrigin}/wp-json/rankmath/v1/getHead`);
-    u.searchParams.set("url", permalink);
-    const res = await fetch(u.toString(), {
-      next: { revalidate: 300 },
-      signal: ctrl.signal,
-    });
-    if (!res.ok) return undefined;
-    const body = (await res.json()) as { success?: boolean; head?: string };
-    if (!body.success || typeof body.head !== "string") return undefined;
-    return parseDescriptionFromHead(body.head);
+    const candidates = [apiOrigin];
+    try {
+      const perm = new URL(permalink);
+      const publicOrigin = `${perm.protocol}//${perm.host}`;
+      if (publicOrigin !== apiOrigin) candidates.push(publicOrigin);
+    } catch {
+      /* keep api origin only */
+    }
+
+    for (const origin of candidates) {
+      const u = new URL(`${origin}/wp-json/rankmath/v1/getHead`);
+      u.searchParams.set("url", permalink);
+      const res = await fetch(u.toString(), {
+        next: { revalidate: 300 },
+        signal: ctrl.signal,
+      });
+      if (!res.ok) continue;
+      const body = (await res.json()) as { success?: boolean; head?: string };
+      if (!body.success || typeof body.head !== "string") continue;
+      return parseDescriptionFromHead(body.head);
+    }
+    return undefined;
   } catch {
     return undefined;
   } finally {
