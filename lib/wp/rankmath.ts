@@ -45,6 +45,49 @@ function parseDescriptionFromHead(html: string): string | undefined {
   return undefined;
 }
 
+
+function metaStringValue(v: unknown): string | undefined {
+  if (typeof v === "string" && v.trim()) return v.trim().replace(/\s+/g, " ");
+  if (Array.isArray(v)) {
+    for (const item of v) {
+      if (typeof item === "string" && item.trim()) return item.trim().replace(/\s+/g, " ");
+    }
+  }
+  return undefined;
+}
+
+function parseMetaString(meta: Record<string, unknown> | undefined, keys: string[]): string | undefined {
+  if (!meta) return undefined;
+  for (const k of keys) {
+    const out = metaStringValue(meta[k]);
+    if (out) return out;
+  }
+  return undefined;
+}
+
+async function fetchRankMathDescriptionFromRest(
+  apiOrigin: string,
+  slug: string,
+  signal: AbortSignal,
+): Promise<string | undefined> {
+  const u = new URL(`${apiOrigin}/wp-json/wp/v2/posts`);
+  u.searchParams.set("slug", slug);
+  u.searchParams.set("context", "view");
+  u.searchParams.set("per_page", "1");
+  u.searchParams.set("_fields", "meta");
+  const res = await fetch(u.toString(), { next: { revalidate: 300 }, signal });
+  if (!res.ok) return undefined;
+  const body = (await res.json()) as Array<{ meta?: Record<string, unknown> }>;
+  const meta = Array.isArray(body) && body[0] ? body[0].meta : undefined;
+  const raw = parseMetaString(meta, [
+    "rank_math_description",
+    "_rank_math_description",
+    "_yoast_wpseo_metadesc",
+    "yoast_wpseo_metadesc",
+  ]);
+  return raw ? decodeEntities(raw).trim().replace(/\s+/g, " ") : undefined;
+}
+
 async function fetchRankMathDescriptionImpl(
   slug: string,
   timeoutMs = 8000,
@@ -75,8 +118,13 @@ async function fetchRankMathDescriptionImpl(
       if (!res.ok) continue;
       const body = (await res.json()) as { success?: boolean; head?: string };
       if (!body.success || typeof body.head !== "string") continue;
-      return parseDescriptionFromHead(body.head);
+      const parsed = parseDescriptionFromHead(body.head);
+      if (parsed) return parsed;
     }
+
+    // Fallback: if Rank Math head endpoint is unavailable, try REST post meta.
+    const restMeta = await fetchRankMathDescriptionFromRest(apiOrigin, cleanSlug, ctrl.signal);
+    if (restMeta) return restMeta;
     return undefined;
   } catch {
     return undefined;
