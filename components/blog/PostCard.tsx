@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, Clock, User } from "lucide-react";
@@ -17,6 +20,9 @@ export function PostCard({
   className,
   variant = "default",
 }: PostCardProps) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(post.featuredImage) && !imageFailed;
+
   return (
     <article
       className={cn(
@@ -32,14 +38,15 @@ export function PostCard({
             variant === "featured" ? "aspect-[16/9]" : "aspect-[16/10]"
           )}
         >
-          {post.featuredImage ? (
+          {showImage ? (
             <Image
-              src={post.featuredImage}
+              src={post.featuredImage!}
               alt={post.featuredImageAlt ?? post.title}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
+              onError={() => setImageFailed(true)}
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-primary-muted to-muted flex items-center justify-center">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { formatDateTimeShort } from "@/lib/utils";
@@ -13,6 +14,7 @@ interface TrendingStripProps {
 }
 
 export function TrendingStrip({ posts }: TrendingStripProps) {
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   if (!posts.length) return null;
 
   return (
@@ -60,13 +62,14 @@ export function TrendingStrip({ posts }: TrendingStripProps) {
                 <div className="relative z-10 flex gap-3 items-start pt-6">
                   {/* Thumbnail */}
                   <div className="shrink-0 w-20 h-16 rounded-lg overflow-hidden bg-muted">
-                    {post.featuredImage ? (
+                    {post.featuredImage && !failedImages[post._id] ? (
                       <Image
                         src={post.featuredImage}
                         alt={post.title}
                         width={80}
                         height={64}
                         className="w-full h-full object-cover"
+                        onError={() => setFailedImages((prev) => ({ ...prev, [post._id]: true }))}
                       />
                     ) : (
                       <div className="w-full h-full bg-primary-muted" />
