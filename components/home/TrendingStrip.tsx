@@ -14,6 +14,7 @@ interface TrendingStripProps {
 }
 
 export function TrendingStrip({ posts }: TrendingStripProps) {
+  const [useUnoptimizedById, setUseUnoptimizedById] = useState<Record<string, boolean>>({});
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   if (!posts.length) return null;
 
@@ -69,7 +70,15 @@ export function TrendingStrip({ posts }: TrendingStripProps) {
                         width={80}
                         height={64}
                         className="w-full h-full object-cover"
-                        onError={() => setFailedImages((prev) => ({ ...prev, [post._id]: true }))}
+                        unoptimized={Boolean(useUnoptimizedById[post._id])}
+                        onError={() => {
+                          if (!useUnoptimizedById[post._id]) {
+                            // Retry once with direct remote URL when optimizer fails (e.g. 402 quota).
+                            setUseUnoptimizedById((prev) => ({ ...prev, [post._id]: true }));
+                            return;
+                          }
+                          setFailedImages((prev) => ({ ...prev, [post._id]: true }));
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full bg-primary-muted" />

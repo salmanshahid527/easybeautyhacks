@@ -20,6 +20,7 @@ export function PostCard({
   className,
   variant = "default",
 }: PostCardProps) {
+  const [useUnoptimized, setUseUnoptimized] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(post.featuredImage) && !imageFailed;
 
@@ -46,7 +47,15 @@ export function PostCard({
               className="object-cover"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
-              onError={() => setImageFailed(true)}
+              unoptimized={useUnoptimized}
+              onError={() => {
+                if (!useUnoptimized) {
+                  // Retry once with direct remote URL when optimizer fails (e.g. 402 quota).
+                  setUseUnoptimized(true);
+                  return;
+                }
+                setImageFailed(true);
+              }}
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-primary-muted to-muted flex items-center justify-center">
