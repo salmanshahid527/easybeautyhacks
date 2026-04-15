@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { getCategoryBySlug, getCategories } from "@/lib/wp/categories";
 import { getPostsForCategoryBySlug } from "@/lib/wp/post";
 import { CategoryArchive } from "@/components/blog/CategoryArchive";

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { SITE_NAME } from "@/lib/constants";
 
 interface AuthorCardProps {

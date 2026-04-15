@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { Calendar, Clock, User } from "lucide-react";
 import { formatDateTimeShort, readTime, cn } from "@/lib/utils";
 import type { Post } from "@/types";

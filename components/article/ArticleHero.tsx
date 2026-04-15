@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { Calendar, Clock, ChevronRight } from "lucide-react";
 import { formatDateTimeShort, readTime } from "@/lib/utils";
 import type { PostDetail } from "@/types";
