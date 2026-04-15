@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import NextImage from "next/image";
 import type { ComponentProps } from "react";
 
@@ -14,8 +14,15 @@ export function SmartImage(props: SmartImageProps) {
   const [useUnoptimized, setUseUnoptimized] = useState(Boolean(props.unoptimized));
   const originalOnError = props.onError;
 
+  const srcKey = useMemo(() => {
+    const src = props.src;
+    if (typeof src === "string") return src;
+    return src?.src ?? "";
+  }, [props.src]);
+
   return (
     <NextImage
+      key={`${useUnoptimized ? "raw" : "opt"}:${srcKey}`}
       {...props}
       unoptimized={useUnoptimized}
       onError={(e) => {
