@@ -60,6 +60,8 @@ remotePatterns.push(
 const nextConfig: NextConfig = {
   outputFileTracingRoot: _dirname,
   images: {
+    /** Bypass Vercel Image Optimization transforms (Hobby quota); WP/CDN serve sized assets */
+    unoptimized: true,
     remotePatterns,
   },
   async rewrites() {

@@ -4,7 +4,7 @@ import { WpPageContent } from "@/components/pages/WpPageContent";
 import { Container } from "@/components/layout/Container";
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/constants";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("about");

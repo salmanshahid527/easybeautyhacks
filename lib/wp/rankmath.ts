@@ -75,7 +75,7 @@ async function fetchRankMathDescriptionFromRest(
   u.searchParams.set("context", "view");
   u.searchParams.set("per_page", "1");
   u.searchParams.set("_fields", "meta");
-  const res = await fetch(u.toString(), { next: { revalidate: 300 }, signal });
+  const res = await fetch(u.toString(), { next: { revalidate: 3600 }, signal });
   if (!res.ok) return undefined;
   const body = (await res.json()) as Array<{ meta?: Record<string, unknown> }>;
   const meta = Array.isArray(body) && body[0] ? body[0].meta : undefined;
@@ -112,7 +112,7 @@ async function fetchRankMathDescriptionImpl(
       const u = new URL(`${origin}/wp-json/rankmath/v1/getHead`);
       u.searchParams.set("url", permalink);
       const res = await fetch(u.toString(), {
-        next: { revalidate: 300 },
+        next: { revalidate: 3600 },
         signal: ctrl.signal,
       });
       if (!res.ok) continue;

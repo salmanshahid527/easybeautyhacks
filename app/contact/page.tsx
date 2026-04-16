@@ -5,7 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/constants";
 import { ContactForm } from "@/components/pages/ContactForm";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   const desc = `Have a question or collaboration idea? Get in touch with the ${SITE_NAME} team.`;

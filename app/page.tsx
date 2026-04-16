@@ -5,7 +5,7 @@ import { getFeaturedPosts, getPostsForMultipleCategories } from "@/lib/wp/post";
 import { getAuthor } from "@/lib/wp/author";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL, POSTS_PER_CATEGORY_HOME } from "@/lib/constants";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: `${SITE_NAME} — Beauty Tips & Hacks`,

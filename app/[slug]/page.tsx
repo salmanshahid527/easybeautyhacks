@@ -15,7 +15,7 @@ import { fetchRankMathDescription } from "@/lib/wp/rankmath";
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE, SLUG_TO_PATH } from "@/lib/constants";
 import { isHeadlessExcludedWpPageSlug } from "@/lib/wp/excludedPublicWpPages";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 const RESERVED_FOR_STATIC_PARAMS = new Set([
   "about",
