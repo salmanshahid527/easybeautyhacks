@@ -5,8 +5,10 @@ import { fetchWpClient } from "@/lib/wp/client";
 import { decodeHtmlEntities, stripHtml, processPostBody } from "@/lib/html";
 import type { WpPage } from "@/lib/wp/types";
 import type { Page } from "@/types";
+import { isHeadlessExcludedWpPageSlug } from "@/lib/wp/excludedPublicWpPages";
 
 async function fetchPage(slug: string): Promise<Page | null> {
+  if (isHeadlessExcludedWpPageSlug(slug)) return null;
   const data = await fetchWpClient<WpPage[]>("/pages", {
     slug,
     status: "publish",
@@ -26,7 +28,7 @@ export function usePage(slug: string, initialData?: Page | null) {
   return useQuery({
     queryKey: ["page", slug],
     queryFn: () => fetchPage(slug),
-    enabled: !!slug,
+    enabled: !!slug && !isHeadlessExcludedWpPageSlug(slug),
     initialData: initialData ?? undefined,
     initialDataUpdatedAt: hasInitial ? Date.now() : undefined,
     staleTime: hasInitial ? Infinity : 0,

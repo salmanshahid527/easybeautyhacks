@@ -4,6 +4,7 @@ import { decodeHtmlEntities, stripHtml, processPostBody } from "@/lib/html";
 import type { WpPage } from "./types";
 import type { Page } from "@/types";
 import { SLUG_FALLBACKS } from "@/lib/constants";
+import { isHeadlessExcludedWpPageSlug } from "./excludedPublicWpPages";
 
 /** WP pages that map 1:1 to app routes under `SITE_URL` */
 const WP_PAGE_SLUGS_FOR_SITEMAP = ["about", "contact", "privacy"] as const;
@@ -27,11 +28,14 @@ async function fetchPageBySlug(slug: string): Promise<Page | null> {
 export const getPageBySlug = cache(async function (
   slug: string
 ): Promise<Page | null> {
+  if (isHeadlessExcludedWpPageSlug(slug)) return null;
+
   const page = await fetchPageBySlug(slug);
   if (page) return page;
 
   const fallbacks = SLUG_FALLBACKS[slug] ?? [];
   for (const fallback of fallbacks) {
+    if (isHeadlessExcludedWpPageSlug(fallback)) continue;
     const p = await fetchPageBySlug(fallback);
     if (p) return p;
   }

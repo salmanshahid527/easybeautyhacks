@@ -13,6 +13,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { buildPostMetadata } from "@/lib/seo";
 import { fetchRankMathDescription } from "@/lib/wp/rankmath";
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE, SLUG_TO_PATH } from "@/lib/constants";
+import { isHeadlessExcludedWpPageSlug } from "@/lib/wp/excludedPublicWpPages";
 
 export const revalidate = 60;
 
@@ -42,7 +43,13 @@ export async function generateStaticParams() {
   }
   for (const wp of wpPages) {
     const s = wp.slug?.trim();
-    if (s && !RESERVED_FOR_STATIC_PARAMS.has(s)) slugs.add(s);
+    if (
+      s &&
+      !RESERVED_FOR_STATIC_PARAMS.has(s) &&
+      !isHeadlessExcludedWpPageSlug(s)
+    ) {
+      slugs.add(s);
+    }
   }
   return Array.from(slugs).map((slug) => ({ slug }));
 }
