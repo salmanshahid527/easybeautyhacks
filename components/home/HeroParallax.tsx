@@ -3,6 +3,24 @@ import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { ArrowRight } from "lucide-react";
 import type { Post } from "@/types";
 
+function isUnsplashUrl(src: string): boolean {
+  return src.includes("images.unsplash.com");
+}
+
+function tightenUnsplashHeroUrl(src: string): string {
+  if (!isUnsplashUrl(src)) return src;
+  try {
+    const u = new URL(src);
+    u.searchParams.set("w", "800");
+    u.searchParams.set("q", "72");
+    u.searchParams.set("auto", "format");
+    u.searchParams.set("fit", "crop");
+    return u.toString();
+  } catch {
+    return src;
+  }
+}
+
 // Curated fallback images (Unsplash — royalty-free) shown when WP has no posts yet
 const FALLBACK_IMAGES = [
   {
@@ -24,13 +42,12 @@ interface HeroParallaxProps {
 }
 
 export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
-  const heroImage =
-    featuredPosts.find((p) => p.featuredImage)
-      ? {
-          src: featuredPosts.find((p) => p.featuredImage)!.featuredImage!,
-          alt: featuredPosts.find((p) => p.featuredImage)!.title,
-        }
-      : FALLBACK_IMAGES[0];
+  const featured = featuredPosts.find((p) => p.featuredImage);
+  const heroImage = featured
+    ? { src: featured.featuredImage!, alt: featured.title }
+    : FALLBACK_IMAGES[0];
+  const heroSrc = tightenUnsplashHeroUrl(heroImage.src);
+  const heroUnoptimized = isUnsplashUrl(heroImage.src);
 
   return (
     <section className="relative flex min-h-[62vh] items-center overflow-hidden bg-background">
@@ -83,12 +100,13 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
           <div className="relative h-[400px] hidden lg:block hero-fade-img">
             <div className="absolute inset-y-6 left-6 right-12 overflow-hidden rounded-[2rem] border-2 border-white/80 shadow-xl">
               <Image
-                src={heroImage.src}
+                src={heroSrc}
                 alt={heroImage.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 520px, 100vw"
                 priority
+                unoptimized={heroUnoptimized}
               />
             </div>
           </div>
