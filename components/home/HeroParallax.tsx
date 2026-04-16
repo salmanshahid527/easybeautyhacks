@@ -1,9 +1,5 @@
-"use client";
-
-import { useRef } from "react";
 import Link from "next/link";
 import { SmartImage as Image } from "@/components/ui/SmartImage";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import type { Post } from "@/types";
 
@@ -28,39 +24,24 @@ interface HeroParallaxProps {
 }
 
 export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-
-  const wpImages = featuredPosts.slice(0, 3).filter((p) => p.featuredImage);
-  const heroImages =
-    wpImages.length > 0
-      ? wpImages.map((p) => ({ src: p.featuredImage!, alt: p.title }))
-      : FALLBACK_IMAGES;
+  const heroImage =
+    featuredPosts.find((p) => p.featuredImage)
+      ? {
+          src: featuredPosts.find((p) => p.featuredImage)!.featuredImage!,
+          alt: featuredPosts.find((p) => p.featuredImage)!.title,
+        }
+      : FALLBACK_IMAGES[0];
 
   return (
-    <section
-      ref={ref}
-      className="relative min-h-[62vh] overflow-hidden flex items-center bg-background"
-    >
-      {/* Background gradient blobs — parallax */}
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute inset-0 pointer-events-none"
-      >
+    <section className="relative flex min-h-[62vh] items-center overflow-hidden bg-background">
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-primary-muted/60 blur-3xl -translate-y-1/3 translate-x-1/3" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-secondary/10 blur-3xl translate-y-1/3 -translate-x-1/4" />
-      </motion.div>
+      </div>
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text — CSS fade-up animations, parallax y via motion */}
-          <motion.div style={{ y: textY }}>
+          <div>
             <p className="overline text-primary mb-4 hero-fade-1">
               Beauty Tips &amp; Hacks
             </p>
@@ -97,41 +78,19 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
             <p className="mt-6 text-xs text-foreground-subtle hero-fade-5">
               500+ tips · 5 categories · Updated weekly
             </p>
-          </motion.div>
+          </div>
 
-          {/* Image Collage */}
           <div className="relative h-[400px] hidden lg:block hero-fade-img">
-            {heroImages.map((img, i) => {
-              const transforms = [
-                "rotate-[-2deg] translate-x-4",
-                "rotate-[1.5deg] -translate-y-8 translate-x-12",
-                "rotate-[-0.5deg] translate-y-4 -translate-x-4",
-              ];
-              const sizes = ["w-60 h-72", "w-52 h-64", "w-44 h-56"];
-              const positions = [
-                "top-0 left-0",
-                "top-8 left-28",
-                "top-28 left-12",
-              ];
-              const zIndexes = [10, 20, 30];
-
-              return (
-                <div
-                  key={i}
-                  className={`absolute ${positions[i]} ${sizes[i]} ${transforms[i]} rounded-2xl overflow-hidden border-2 border-white/80 shadow-xl`}
-                  style={{ zIndex: zIndexes[i] }}
-                >
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-cover"
-                    sizes="280px"
-                    priority={i === 0}
-                  />
-                </div>
-              );
-            })}
+            <div className="absolute inset-y-6 left-6 right-12 overflow-hidden rounded-[2rem] border-2 border-white/80 shadow-xl">
+              <Image
+                src={heroImage.src}
+                alt={heroImage.alt}
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 520px, 100vw"
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>
