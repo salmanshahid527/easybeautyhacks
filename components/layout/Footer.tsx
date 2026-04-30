@@ -121,6 +121,8 @@ export function Footer({ initialCategories }: FooterProps) {
                 { label: "Blog", href: "/blog" },
                 { label: "About", href: "/about" },
                 { label: "Contact", href: "/contact" },
+                { label: "Disclaimer", href: "/disclaimer" },
+
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -184,6 +186,7 @@ export function Footer({ initialCategories }: FooterProps) {
             {[
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Contact", href: "/contact" },
+
             ].map((link) => (
               <Link
                 key={link.href}

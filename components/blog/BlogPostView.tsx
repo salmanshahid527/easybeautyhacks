@@ -49,53 +49,60 @@ export function BlogPostView({ slug, initialPost, relatedPosts = [] }: BlogPostV
       </div>
     );
   }
+return (
+  <article>
+    <ArticleHero post={post} />
 
-  return (
-    <article>
-      <ArticleHero post={post} />
+    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      
+      {/* Centered Main Content */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-3xl">
 
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12">
-          {/* Main content */}
-          <div className="lg:col-span-8">
-            <ShareButtons title={post.title} slug={post.slug} />
+          <ShareButtons title={post.title} slug={post.slug} />
 
-            {post.body && (
-              <div className="mt-10 lg:mt-12">
-                <ArticleBody html={post.body} featuredImageUrl={post.featuredImage} />
-              </div>
-            )}
-
-            {/* FAQ Section */}
-            {faqItems.length > 0 && (
-              <div className="mt-14 lg:mt-16">
-                <FAQAccordion items={faqItems} />
-              </div>
-            )}
-
-            {/* Related Posts Section */}
-            {relatedPosts.length > 0 && (
-              <div className="mt-14 lg:mt-16">
-                <RelatedPosts posts={relatedPosts} currentPostSlug={slug} />
-              </div>
-            )}
-
-            <div className="mt-14 lg:mt-16 pt-10 lg:pt-12 border-t border-border">
-              <AuthorCard
-                name={post.author?.name}
-                image={post.author?.image}
-              />
+          {post.body && (
+            <div className="mt-10">
+              <ArticleBody   html={post.body}  featuredImageUrl={post.featuredImage} />
             </div>
+          )}
+
+          {/* FAQ */}
+          {faqItems.length > 0 && (
+            <div className="mt-16">
+              <FAQAccordion items={faqItems} />
+            </div>
+          )}
+
+          {/* Related Posts */}
+          {relatedPosts.length > 0 && (
+            <div className="mt-16">
+              <RelatedPosts posts={relatedPosts} currentPostSlug={slug} />
+            </div>
+          )}
+
+          {/* Author */}
+          <div className="mt-16 pt-10 border-t border-border">
+            <AuthorCard
+              name={post.author?.name}
+              image={post.author?.image}
+            />
           </div>
 
-          {/* Sidebar TOC (desktop only) */}
-          {post.body && (
-            <aside className="hidden lg:block lg:col-span-4 sticky top-8 h-fit">
-              <TableOfContents html={post.body} />
-            </aside>
-          )}
         </div>
       </div>
-    </article>
-  );
+
+      {/* OPTIONAL: Sidebar (TOC) */}
+      {post.body && (
+        <div className="hidden xl:block fixed right-10 top-40 w-64">
+          <TableOfContents html={post.body} />
+        </div>
+      )}
+
+    </div>
+  </article>
+);
+
+
+  
 }

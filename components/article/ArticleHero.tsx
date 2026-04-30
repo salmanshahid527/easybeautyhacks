@@ -68,14 +68,14 @@ export function ArticleHero({ post }: ArticleHeroProps) {
         <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight mb-4 max-w-4xl animate-fade-in-up">
           {post.title}
         </h1>
-
-        {post.excerpt && (
+{/* text & featur imge */}
+        {/* {post.excerpt && (
           <p className="text-base sm:text-lg lg:text-xl text-foreground-muted leading-relaxed mb-8 max-w-3xl animate-fade-in-up" style={{animationDelay: '100ms'}}>
             {post.excerpt}
           </p>
-        )}
+        )} */}
 
-        {post.featuredImage ? (
+        {/* {post.featuredImage ? (
           <div
             className="relative mt-2 mb-10 w-full max-w-4xl overflow-hidden rounded-2xl border border-border/50 bg-muted/30 shadow-lg aspect-16/10 max-h-[min(70vw,440px)] sm:max-h-[440px] animate-fade-in-up"
             style={{ animationDelay: "120ms" }}
@@ -89,7 +89,7 @@ export function ArticleHero({ post }: ArticleHeroProps) {
               priority
             />
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="flex flex-wrap items-center gap-6 text-sm text-foreground-muted pt-6 border-t border-border/50 animate-slide-up" style={{animationDelay: '150ms'}}>
           {post.author && (
@@ -110,10 +110,12 @@ export function ArticleHero({ post }: ArticleHeroProps) {
               {formatDateTimeShort(post.publishedAt)}
             </time>
           </div>
+{/*  readtime
           <div className="flex items-center gap-1.5">
             <Clock size={16} />
             {readTime(post.body)}
-          </div>
+          </div> */}
+
         </div>
       </div>
     </section>
