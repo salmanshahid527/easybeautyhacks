@@ -101,7 +101,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning >
       <head>
         <meta name="theme-color" content="#c4507a" />
         {wpOrigin && (

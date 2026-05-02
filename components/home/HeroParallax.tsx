@@ -93,7 +93,7 @@ export function HeroParallax({ featuredPosts }: HeroParallaxProps) {
             </div>
 
             <p className="mt-6 text-xs text-foreground-subtle hero-fade-5">
-              500+ tips · 5 categories · Updated weekly
+              60+ tips · 5 categories · Updated weekly
             </p>
           </div>
 

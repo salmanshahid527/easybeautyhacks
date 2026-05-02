@@ -11,7 +11,7 @@ export const POSTS_PER_CATEGORY_HOME = 4;
 
 export const CATEGORIES_HOME = ["skincare", "makeup", "hair-care", "nail-art", "wellness"];
 
-export const NAV_PAGE_SLUGS = ["about", "contact", "privacy-policy"];
+export const NAV_PAGE_SLUGS = ["about", "contact", "privacy","disclaimer"];
 
 export const SLUG_TO_PATH: Record<string, string> = {
   about: "/about",
@@ -19,16 +19,19 @@ export const SLUG_TO_PATH: Record<string, string> = {
   contact: "/contact",
   "contact-us": "/contact",
   "privacy-policy": "/privacy",
+  disclaimer: "/disclaimer"
+  
+  
 };
-
 export const SLUG_FALLBACKS: Record<string, string[]> = {
   about: ["about-us"],
   contact: ["contact-us"],
   privacy: ["privacy-policy"],
+  disclaimer: ["disclaimer"]
 };
 
 export const SOCIAL = {
   pinterest: "https://www.pinterest.com/easybeautyhacks",
-  instagram: "https://www.instagram.com/easybeautyhacks",
+  instagram:"https://www.instagram.com/easy_beauty_hack/",
   facebook: "https://www.facebook.com/easybeautyhacks",
 };
