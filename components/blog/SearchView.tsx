@@ -6,13 +6,15 @@ import { useSearch } from "@/hooks/useSearch";
 import { useDebounce } from "@/hooks/useDebounce";
 import { PostGrid } from "./PostGrid";
 
+const SEARCH_MIN_QUERY_LENGTH = 3;
+
 export function SearchView() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 350);
   const { data: results = [], isLoading, isFetching } = useSearch(debouncedQuery);
 
   const isSearching = isLoading || isFetching;
-  const hasQuery = debouncedQuery.trim().length >= 2;
+  const hasQuery = debouncedQuery.trim().length >= SEARCH_MIN_QUERY_LENGTH;
 
   return (
     <div>
@@ -34,6 +36,8 @@ export function SearchView() {
             placeholder="Search for skincare, makeup, hair care..."
             autoFocus
             className="w-full pl-13 pr-12 py-4 rounded-2xl border border-border bg-background text-foreground placeholder:text-foreground-subtle text-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            aria-label="Search posts"
+
           />
           {query && (
             <button
