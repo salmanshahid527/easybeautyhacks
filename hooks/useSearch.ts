@@ -6,6 +6,8 @@ import { mapWpPostToPost } from "@/lib/wp/map";
 import type { WpPost } from "@/lib/wp/types";
 import type { Post } from "@/types";
 
+const SEARCH_MIN_QUERY_LENGTH = 3;
+
 async function fetchSearchResults(query: string): Promise<Post[]> {
   if (!query.trim()) return [];
   const data = await fetchWpClient<WpPost[]>("/posts", {
@@ -21,7 +23,7 @@ export function useSearch(query: string) {
   return useQuery({
     queryKey: ["search", query],
     queryFn: () => fetchSearchResults(query),
-    enabled: query.trim().length >= 2,
+    enabled: query.trim().length >= SEARCH_MIN_QUERY_LENGTH,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
