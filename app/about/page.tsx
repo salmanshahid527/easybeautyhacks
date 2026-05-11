@@ -32,10 +32,18 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AboutPage() {
   const page = await getPageBySlug("about");
   return (
+
     <div className="section-gap">
-      <Container>
-        <WpPageContent slug="about" initialPage={page} />
-      </Container>
+  <Container>
+    <div className="mx-auto max-w-3xl">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
+
+        <WpPageContent slug="about"  initialPage={page}  />
+
+      </div>
     </div>
+  </Container>
+</div>
+    
   );
 }
