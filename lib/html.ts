@@ -184,7 +184,7 @@ export function removeFeaturedImageFromBody(html: string, featuredImageUrl?: str
  */
 
 function getFaqSection(html: string): string {
-  // Ye regex ab "Frequently Asked Questions" OR "FAQs" dono ko dhoondega
+  // This regex will now match both 'Frequently Asked Questions' and 'FAQs'.
   const match = html.match(/(Frequently Asked Questions|FAQs)[\s\S]*?(?=<h2|Related Articles|$)/i);
   return match ? match[0] : "";
 }
@@ -193,7 +193,7 @@ export function extractFAQFromHtml(html: string) {
   const faqHtml = getFaqSection(html);
   const faqItems: Array<{ question: string; answer: string }> = [];
 
-  // Agar section mil jaye tabhi aage barho
+  // Continue execution only upon finding the section
   if (!faqHtml) return [];
 
   const h3Pattern = /<h3[^>]*>([^<]+)<\/h3>/gi;
@@ -222,8 +222,6 @@ export function extractFAQFromHtml(html: string) {
 
   return faqItems;
 }
-
-
 
 /**
  * Add loading="lazy" and decoding="async" to all prose images except the
@@ -255,7 +253,5 @@ export function processPostBody(html: string | undefined, featuredImageUrl?: str
   const rewritten = rewriteWpUrlsToSiteUrl(sanitized);
   const httpsed = forceHttpsForImgSrc(rewritten);
   const noFeatured = removeFeaturedImageFromBody(httpsed, featuredImageUrl);
-  // 👉 NEW STEP (important)
-
-  return addLazyLoadingToProseImages(noFeatured);
+return addLazyLoadingToProseImages(noFeatured);
 }

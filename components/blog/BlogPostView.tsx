@@ -49,8 +49,6 @@ export function BlogPostView({ slug, initialPost, relatedPosts = [] }: BlogPostV
       </div>
     );
   }
-  // const cleanedBody = post.body.split("Frequently Asked Questions")[0];
-  // const cleanedBody = post.body!.split("Frequently Asked Questions")[0];
   const cleanedBody = (post.body ?? "").split("Frequently Asked Questions")[0];
 return (
   <article>
@@ -66,14 +64,8 @@ return (
 
           {post.body && (
             <div className="mt-10">
-            <ArticleBody
-              html={cleanedBody}
-              featuredImageUrl={post.featuredImage}
-            />
+            <ArticleBody   html={cleanedBody} featuredImageUrl={post.featuredImage} />
           </div> 
-            // <div className="mt-10">
-            //   <ArticleBody   html={post.body}  featuredImageUrl={post.featuredImage} />
-            // </div>
           )}
 
           {/* FAQ */}
@@ -88,18 +80,12 @@ return (
             <div className="mt-16">
               <RelatedPosts posts={relatedPosts} currentPostSlug={slug} />
             </div>
-          )}
-
-     
+          )}     
 
           {/* Author */}
           <div className="mt-16 pt-10 border-t border-border">
-            <AuthorCard
-              name={post.author?.name}
-              image={post.author?.image}
-            />
+            <AuthorCard name={post.author?.name} image={post.author?.image} />
           </div>
-
         </div>
       </div>
 
@@ -113,7 +99,5 @@ return (
     </div>
   </article>
 );
-
-
   
 }

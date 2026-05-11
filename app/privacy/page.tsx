@@ -25,9 +25,5 @@ export default async function PrivacyPage() {
     </div>
   </Container>
 </div>
-
-
-
-    
   );
 }
