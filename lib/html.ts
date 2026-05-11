@@ -1,6 +1,8 @@
 const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "api.easybeautyhacks.com/wp-json";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://easybeautyhacks.com";
 
+
+
 function decodeNumericHtmlEntities(text: string): string {
   return text
     .replace(/&amp;#(\d{1,7});/g, "&#$1;")
@@ -180,40 +182,48 @@ export function removeFeaturedImageFromBody(html: string, featuredImageUrl?: str
  * Extract FAQ items from HTML content (expects h3 tags followed by p tags).
  * Returns array of {question, answer} pairs.
  */
-export function extractFAQFromHtml(html: string): Array<{ question: string; answer: string }> {
+
+function getFaqSection(html: string): string {
+  // Ye regex ab "Frequently Asked Questions" OR "FAQs" dono ko dhoondega
+  const match = html.match(/(Frequently Asked Questions|FAQs)[\s\S]*?(?=<h2|Related Articles|$)/i);
+  return match ? match[0] : "";
+}
+
+export function extractFAQFromHtml(html: string) {
+  const faqHtml = getFaqSection(html);
   const faqItems: Array<{ question: string; answer: string }> = [];
-  
-  // Match patterns like: <h3>Question?</h3><p>Answer text.</p>
+
+  // Agar section mil jaye tabhi aage barho
+  if (!faqHtml) return [];
+
   const h3Pattern = /<h3[^>]*>([^<]+)<\/h3>/gi;
   const pPattern = /<p[^>]*>([^<]+)<\/p>/gi;
-  
-  // Find all h3 and p tags
-  const h3Matches = Array.from(html.matchAll(h3Pattern)).map(m => ({
-    text: stripHtml(m[1]),
-    index: m.index || 0
-  }));
-  
-  const pMatches = Array.from(html.matchAll(pPattern)).map(m => ({
-    text: stripHtml(m[1]),
-    index: m.index || 0
-  }));
-  
-  // Pair h3 (questions) with following p (answers)
+
+  const h3Matches = Array.from(faqHtml.matchAll(h3Pattern));
+  const pMatches = Array.from(faqHtml.matchAll(pPattern));
+
   for (let i = 0; i < h3Matches.length; i++) {
-    const question = h3Matches[i];
-    // Find the next p tag that comes after this h3
-    const nextP = pMatches.find(p => p.index > question.index);
+    const questionText = stripHtml(h3Matches[i][1]);
     
-    if (nextP && question.text && nextP.text) {
-      faqItems.push({
-        question: question.text,
-        answer: nextP.text
-      });
+    // Sirf wo headings uthayein jin mein "?" ho (Steps ko filter karne ke liye)
+    if (questionText.includes("?")) {
+      const h3Index = h3Matches[i].index || 0;
+      // Is H3 ke baad wala pehla Paragraph dhundo
+      const nextP = pMatches.find(p => (p.index || 0) > h3Index);
+
+      if (nextP) {
+        faqItems.push({
+          question: questionText,
+          answer: stripHtml(nextP[1]),
+        });
+      }
     }
   }
-  
+
   return faqItems;
 }
+
+
 
 /**
  * Add loading="lazy" and decoding="async" to all prose images except the
@@ -236,6 +246,8 @@ export function addLazyLoadingToProseImages(html: string): string {
   });
 }
 
+
+
 /** Full pipeline: sanitize → rewrite URLs → force HTTPS → remove featured image → lazy-load images */
 export function processPostBody(html: string | undefined, featuredImageUrl?: string): string | undefined {
   if (!html?.trim()) return html;
@@ -243,5 +255,7 @@ export function processPostBody(html: string | undefined, featuredImageUrl?: str
   const rewritten = rewriteWpUrlsToSiteUrl(sanitized);
   const httpsed = forceHttpsForImgSrc(rewritten);
   const noFeatured = removeFeaturedImageFromBody(httpsed, featuredImageUrl);
+  // 👉 NEW STEP (important)
+
   return addLazyLoadingToProseImages(noFeatured);
 }
