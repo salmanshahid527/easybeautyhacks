@@ -17,9 +17,17 @@ export default async function PrivacyPage() {
   const page = await getPageBySlug("privacy");
   return (
     <div className="section-gap">
-      <Container>
-        <WpPageContent slug="privacy" initialPage={page} />
-      </Container>
+  <Container>
+    <div className="mx-auto max-w-3xl">
+      <div className="prose prose-neutral dark:prose-invert max-w-none">
+        <WpPageContent  slug="privacy-policy" initialPage={page}/>
+      </div>
     </div>
+  </Container>
+</div>
+
+
+
+    
   );
 }
