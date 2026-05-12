@@ -104,6 +104,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning >
       <head>
         <meta name="theme-color" content="#c4507a" />
+        <meta name="p:domain_verify" content="cdc27d93222fbafe6bad2f6fa3db456a" />
         {wpOrigin && (
           <link rel="preconnect" href={wpOrigin} crossOrigin="anonymous" />
         )}
