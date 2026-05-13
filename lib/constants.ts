@@ -19,9 +19,7 @@ export const SLUG_TO_PATH: Record<string, string> = {
   contact: "/contact",
   "contact-us": "/contact",
   "privacy-policy": "/privacy",
-  disclaimer: "/disclaimer"
-  
-  
+  disclaimer: "/disclaimer",
 };
 export const SLUG_FALLBACKS: Record<string, string[]> = {
   about: ["about-us"],

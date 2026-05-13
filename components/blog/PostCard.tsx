@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SmartImage as Image } from "@/components/ui/SmartImage";
-import { Calendar, Clock, User } from "lucide-react";
+import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { formatDateTimeShort, readTime, cn } from "@/lib/utils";
 import type { Post } from "@/types";
 
@@ -100,30 +100,23 @@ export function PostCard({
             {post.excerpt}
           </p>
         )}
-
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-1.5 text-xs text-foreground-subtle">
-            <Calendar size={11} />
-            <time dateTime={post.publishedAt}>
-              {formatDateTimeShort(post.publishedAt)}
-            </time>
-            {post.author?.name ? (
-              <>
-                <span aria-hidden="true">•</span>
-                <span className="inline-flex items-center gap-1">
-                  <User size={11} />
-                  {post.author.name}
-                </span>
-              </>
-            ) : null}
-          </div>
-          <Link
-            href={`/${post.slug}`}
-            className="text-xs font-medium text-secondary hover:text-primary transition-colors"
-          >
-            Read more →
-          </Link>
-        </div>
+<div className="flex items-center justify-between mt-auto gap-2">
+  <div className="flex items-center gap-1.5 text-xs text-foreground-subtle flex-1 min-w-0">
+    {post.author?.name ? (
+      <>
+        <User size={11} className="shrink-0" />
+        <span className="truncate">{post.author.name}</span>
+      </>
+    ) : null}
+  </div>
+<Link
+  href={`/${post.slug}`}
+  className="shrink-0 whitespace-nowrap inline-flex items-center gap-1 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-3 py-1.5 transition-all duration-200"
+>
+  Read more
+  <ArrowRight size={11} />
+</Link>
+</div>
       </div>
     </article>
   );

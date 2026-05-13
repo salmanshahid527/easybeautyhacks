@@ -108,7 +108,7 @@ export default async function RootLayout({
         {wpOrigin && (
           <link rel="preconnect" href={wpOrigin} crossOrigin="anonymous" />
         )}
-        <link
+        <link    
           rel="preconnect"
           href="https://images.unsplash.com"
           crossOrigin="anonymous"
