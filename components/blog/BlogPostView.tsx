@@ -11,6 +11,7 @@ import { RelatedPosts } from "@/components/article/RelatedPosts";
 import { FAQAccordion, type FAQItem } from "@/components/article/FAQAccordion";
 import { extractFAQFromHtml } from "@/lib/html";
 import type { PostDetail, Post } from "@/types";
+import PinterestHover from "./PinterestHover";
 
 interface BlogPostViewProps {
   slug: string;
@@ -64,7 +65,12 @@ return (
 
           {post.body && (
             <div className="mt-10">
+
+{/* pintrest-hover */}
+              <PinterestHover targetContainerClass="article-rich-text-body" />
+              <div className="article-rich-text-body">
             <ArticleBody   html={cleanedBody} featuredImageUrl={post.featuredImage} />
+              </div>
           </div> 
           )}
 
@@ -84,7 +90,11 @@ return (
 
           {/* Author */}
           <div className="mt-16 pt-10 border-t border-border">
-            <AuthorCard name={post.author?.name} image={post.author?.image} />
+            <AuthorCard
+              name={post.author?.name}
+              image={post.author?.image}
+              bio={(post.author as { description?: string } | undefined)?.description}
+            />
           </div>
         </div>
       </div>
