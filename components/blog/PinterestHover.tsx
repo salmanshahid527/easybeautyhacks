@@ -24,9 +24,8 @@ export default function PinterestHover({ targetContainerClass }: PinterestHoverP
         wrapper.className = "relative group inline-block w-full";
 
         const overlayDiv = document.createElement("div");
-        overlayDiv.className = "absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity z-10";
-        
-        const pinBtn = document.createElement("button");
+overlayDiv.className = "absolute top-3 left-3 z-10 transition-opacity duration-200 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100";
+const pinBtn = document.createElement("button");
         pinBtn.className = "bg-red-600 text-white p-2 rounded-full shadow-md flex items-center justify-center hover:bg-red-700 transition-colors pointer-events-auto";
         
         pinBtn.innerHTML = `

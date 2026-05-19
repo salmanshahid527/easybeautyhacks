@@ -42,7 +42,7 @@ export function PostCard({
           {showImage ? (
             <>
               {/*  PINTEREST BUTTON  */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                <div className="absolute top-3 right-3 z-20 transition-opacity duration-200 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100">
                 <button
                   onClick={(e) => {
                     e.preventDefault(); // Card open nahi hoga
