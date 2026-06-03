@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SmartImage as Image } from "@/components/ui/SmartImage";
 import { getCategoryBySlug, getCategories } from "@/lib/wp/categories";
 import { getPostsForCategoryBySlug } from "@/lib/wp/post";
-import { CategoryArchive } from "@/components/blog/CategoryArchive";
+import { CategoryPostList } from "@/components/blog/CategoryPostList";
 import { Container } from "@/components/layout/Container";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { buildCategoryMetadata } from "@/lib/seo";
@@ -87,10 +87,7 @@ export default async function CategoryPage({ params }: PageProps) {
       {/* Posts */}
       <div className="section-gap">
         <Container>
-          <CategoryArchive
-            category={category}
-            initialPosts={initialPosts}
-          />
+          <CategoryPostList posts={initialPosts} />
         </Container>
       </div>
     </div>

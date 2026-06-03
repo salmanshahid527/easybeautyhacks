@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BLOG_POSTS_PER_PAGE } from "@/lib/blogPagination";
 import { getLatestPostForBlogMeta, getPostsForBlogPage } from "@/lib/wp/post";
 import { getCategories } from "@/lib/wp/categories";
-import { PostList } from "@/components/blog/PostList";
+import { BlogPostList } from "@/components/blog/BlogPostList";
 import { Container } from "@/components/layout/Container";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { buildOgImage } from "@/lib/seo";
@@ -67,7 +67,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </p>
         </div>
 
-        <PostList initialBlogPage={initialBlogPage} initialCategories={initialCategories} />
+        <BlogPostList
+          posts={initialBlogPage.posts}
+          total={initialBlogPage.total}
+          totalPages={initialBlogPage.totalPages}
+          page={page}
+          categorySlug={categorySlug}
+          categories={initialCategories}
+        />
       </Container>
     </div>
   );
