@@ -9,6 +9,7 @@ import { OrganizationWebSiteJsonLd } from "@/components/seo/JsonLd";
 import { getNavLinks } from "@/lib/wp/nav";
 import { getCategories } from "@/lib/wp/categories";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/constants";
+import { CookiesWrapper } from "@/components/cookies/CookiesWrapper";
 
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
@@ -137,6 +138,8 @@ export default async function RootLayout({
           />
           <main className="flex-1 w-full overflow-x-hidden">{children}</main>
           <Footer initialCategories={initialCategories} />
+        <CookiesWrapper />
+
         </Providers>
       </body>
     </html>
