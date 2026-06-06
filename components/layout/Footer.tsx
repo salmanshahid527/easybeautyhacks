@@ -75,8 +75,7 @@ export function Footer({ initialCategories }: FooterProps) {
                 { label: "Disclaimer", href: "/disclaimer" },
                  { label: "Privacy Policy", href: "/privacy" },
                 { label: "About Mila", href: "/about-mila" },  
-                { label: "Terms of Service", href: "/terms" }
-
+                { label: "Terms of Service", href: "/terms-conditions" },
 
 
 
