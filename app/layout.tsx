@@ -92,7 +92,9 @@ export default async function RootLayout({
     getCategories(),
   ]);
 
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+const adsterraSrc = process.env.NEXT_PUBLIC_ADSTERRA_SOCIAL_BAR_SRC ?? "";
+const isProduction = process.env.NODE_ENV === "production";
   const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "";
   let wpOrigin: string | null = null;
   try {
@@ -141,6 +143,9 @@ export default async function RootLayout({
         <CookiesWrapper />
 
         </Providers>
+        {isProduction && adsterraSrc && (
+          <Script src={adsterraSrc} strategy="afterInteractive" />
+        )}
       </body>
     </html>
   );
