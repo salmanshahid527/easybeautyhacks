@@ -93,7 +93,7 @@ export default async function RootLayout({
   ]);
 
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
-const adsterraSrc = process.env.NEXT_PUBLIC_ADSTERRA_SOCIAL_BAR_SRC ?? "";
+const adsterraSrc = process.env.NEXT_PUBLIC_ADSTERRA_SOCIAL_BAR ?? "";
 const isProduction = process.env.NODE_ENV === "production";
   const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "";
   let wpOrigin: string | null = null;

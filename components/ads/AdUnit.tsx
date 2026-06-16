@@ -1,4 +1,3 @@
-
 "use client";
 
 import Script from "next/script";
@@ -11,27 +10,27 @@ const AD_UNITS = {
   },
   banner300x250: {
     type: "atOptions",
-    id: "adsterra-300x250",
-    key: process.env.NEXT_PUBLIC_ADSTERRA_300x250_KEY ?? "",
+    id: "adsterra-medium",
+    key: process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_KEY ?? "",
     height: 250,
     width: 300,
-    src: process.env.NEXT_PUBLIC_ADSTERRA_300x250_SRC ?? "",
+    src: process.env.NEXT_PUBLIC_ADSTERRA_MEDIUM_SRC ?? "",
   },
   banner320x50: {
     type: "atOptions",
-    id: "adsterra-320x50",
-    key: process.env.NEXT_PUBLIC_ADSTERRA_320x50_KEY ?? "",
+    id: "adsterra-mobile",
+    key: process.env.NEXT_PUBLIC_ADSTERRA_MOBILE_KEY ?? "",
     height: 50,
     width: 320,
-    src: process.env.NEXT_PUBLIC_ADSTERRA_320x50_SRC ?? "",
+    src: process.env.NEXT_PUBLIC_ADSTERRA_MOBILE_SRC ?? "",
   },
   banner728x90: {
     type: "atOptions",
-    id: "adsterra-728x90",
-    key: process.env.NEXT_PUBLIC_ADSTERRA_728x90_KEY ?? "",
+    id: "adsterra-leader",
+    key: process.env.NEXT_PUBLIC_ADSTERRA_LEADER_KEY ?? "",
     height: 90,
     width: 728,
-    src: process.env.NEXT_PUBLIC_ADSTERRA_728x90_SRC ?? "",
+    src: process.env.NEXT_PUBLIC_ADSTERRA_LEADER_SRC ?? "",
   },
 } as const;
 
@@ -45,7 +44,6 @@ interface AdUnitProps {
 export function AdUnit({ unit, className = "" }: AdUnitProps) {
   const ad = AD_UNITS[unit];
 
-  //only render in production and if real keys are present
   const isProduction = process.env.NODE_ENV === "production";
   const isRealAdSrc = !!ad.src;
   const isRealAdKey = ad.type === "atOptions" && !!ad.key;
