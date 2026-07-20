@@ -7,10 +7,7 @@ import { getAllPublishedPostsForSitemap } from "@/lib/wp/post";
 /** Google’s limit per sitemap file */
 const MAX_URLS_PER_SITEMAP = 50_000;
 
-/** Served on-demand so production builds do not require WordPress during `next build` */
-export const dynamic = "force-dynamic";
-
-export const revalidate = 3600;
+export const revalidate = 43200;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, categories, wpBacked] = await Promise.all([

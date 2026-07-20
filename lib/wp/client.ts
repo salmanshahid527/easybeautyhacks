@@ -26,7 +26,7 @@ export async function fetchWp<T>(
   }
 
   const res = await fetch(url.toString(), {
-    next: { revalidate: 3600 },
+    next: { revalidate: 43200 },
     headers: { "Content-Type": "application/json" },
   });
 
@@ -54,7 +54,7 @@ export async function fetchWpPaginated<T>(
     }
   }
   const res = await fetch(url.toString(), {
-    next: { revalidate: 3600 },
+    next: { revalidate: 43200 },
     headers: { Accept: "application/json", "Content-Type": "application/json" },
   });
   if (!res.ok) {
@@ -110,7 +110,7 @@ const WP_COLLECTION_MAX_PAGES = 500;
 
 type FetchWpCollectionOptions = {
   perPage?: number;
-  /** Default 3600. Use `false` to skip Next fetch cache (good for sitemaps). */
+  /** Default 43200 (12 hours). Use `false` to skip Next fetch cache (good for sitemaps). */
   revalidate?: number | false;
 };
 
@@ -128,7 +128,7 @@ export async function fetchWpCollectionAll<T>(
     Math.max(1, options?.perPage ?? WP_MAX_PER_PAGE),
     WP_MAX_PER_PAGE
   );
-  const revalidateOpt = options?.revalidate ?? 3600;
+  const revalidateOpt = options?.revalidate ?? 43200;
   const all: T[] = [];
   let page = 1;
 

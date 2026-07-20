@@ -3,6 +3,8 @@ import { SearchView } from "@/components/blog/SearchView";
 import { Container } from "@/components/layout/Container";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 
+export const revalidate = 43200;
+
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
   title: "Search",

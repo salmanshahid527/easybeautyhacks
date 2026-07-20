@@ -9,7 +9,7 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { buildCategoryMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 3600;
+export const revalidate = 43200;
 
 /** Pre-render all non-empty categories at build time */
 export async function generateStaticParams() {

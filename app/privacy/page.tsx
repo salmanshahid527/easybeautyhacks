@@ -4,7 +4,7 @@ import { WpPageContent } from "@/components/pages/WpPageContent";
 import { Container } from "@/components/layout/Container";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 3600;
+export const revalidate = 43200;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

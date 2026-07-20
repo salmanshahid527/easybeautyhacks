@@ -7,7 +7,7 @@ import { Container } from "@/components/layout/Container";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { buildOgImage } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = 43200;
 
 export async function generateMetadata(): Promise<Metadata> {
   const latest = await getLatestPostForBlogMeta();
