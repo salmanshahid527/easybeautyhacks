@@ -9,6 +9,8 @@ import { OrganizationWebSiteJsonLd } from "@/components/seo/JsonLd";
 import { getNavLinks } from "@/lib/wp/nav";
 import { getCategories } from "@/lib/wp/categories";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/constants";
+import { CookiesWrapper } from "@/components/cookies/CookiesWrapper";
+import { getSocialBarScriptUrl } from "@/lib/adsterra";
 
 export const revalidate = 43200;
 
@@ -94,6 +96,9 @@ export default async function RootLayout({
   ]);
 
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+  const socialBarKey = process.env.NEXT_PUBLIC_ADSTERRA_SOCIAL_BAR_KEY ?? "";
+  const socialBarSrc = getSocialBarScriptUrl(socialBarKey);
+  const isProduction = process.env.NODE_ENV === "production";
   const wpUrl = process.env.NEXT_PUBLIC_WP_API_URL ?? "";
   let wpOrigin: string | null = null;
   try {
@@ -139,7 +144,12 @@ export default async function RootLayout({
           />
           <main className="flex-1 w-full overflow-x-hidden">{children}</main>
           <Footer initialCategories={initialCategories} />
+        <CookiesWrapper />
+
         </Providers>
+        {isProduction && socialBarSrc && (
+          <Script src={socialBarSrc} strategy="afterInteractive" />
+        )}
       </body>
     </html>
   );

@@ -4,6 +4,8 @@ import { getCategories } from "@/lib/wp/categories";
 import { getFeaturedPosts, getPostsForMultipleCategories } from "@/lib/wp/post";
 import { getAuthor } from "@/lib/wp/author";
 import { SITE_NAME, SITE_DESCRIPTION, SITE_URL, POSTS_PER_CATEGORY_HOME } from "@/lib/constants";
+import { AdUnit } from "@/components/ads/AdUnit";
+
 
 export const revalidate = 43200;
 
@@ -27,8 +29,18 @@ export default async function HomePage() {
   );
 
   return (
+
+    <>
+      {/* Desktop banner — top */}
+      <AdUnit unit="banner728x90" />
+      {/* Mobile banner — top */}
+      <AdUnit unit="banner320x50" />
     <HomeSections
       initialData={{ categories, featuredPosts, author, postsByCategoryId }}
     />
+
+    {/* Native Banner — before footer */}
+      <AdUnit unit="nativeBanner" />
+    </>
   );
 }
