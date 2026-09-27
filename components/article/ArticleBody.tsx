@@ -1,6 +1,7 @@
 "use client";
 
 import { removeFeaturedImageFromBody } from "@/lib/html";
+import { addMissingImageAlts } from "@/lib/imageAlt";
 
 interface ArticleBodyProps {
   html: string;
@@ -10,7 +11,7 @@ interface ArticleBodyProps {
 export function ArticleBody({ html, featuredImageUrl }: ArticleBodyProps) {
   // Remove ONLY the featured image from the beginning to avoid duplication with hero
   // In-content images are preserved for article flow
-  const cleanedHtml = removeFeaturedImageFromBody(html, featuredImageUrl);
+  const cleanedHtml = addMissingImageAlts(removeFeaturedImageFromBody(html, featuredImageUrl));
 
   return (
     <article className="prose-beauty max-w-full w-full">

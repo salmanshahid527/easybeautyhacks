@@ -12,7 +12,6 @@ import { FAQAccordion, type FAQItem } from "@/components/article/FAQAccordion";
 import { extractFAQFromHtml } from "@/lib/html";
 import type { PostDetail, Post } from "@/types";
 import PinterestHover from "./PinterestHover";
-import { AdUnit } from "../ads/AdUnit";
 
 interface BlogPostViewProps {
   slug: string;
@@ -56,11 +55,6 @@ return (
   <article>
     <ArticleHero post={post} />
 
-    {/* Desktop — after the hero  */}
-      <AdUnit unit="banner728x90" />
-      {/* Mobile — after hero */}
-      <AdUnit unit="banner320x50" />
-
     <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
       
       {/* Centered Main Content */}
@@ -71,8 +65,6 @@ return (
 
           {post.body && (
             <div className="mt-10">
-              {/*Before the  Article */}
-                <AdUnit unit="banner300x250" className="mb-8" />
 
            {/* pintrest-hover */}
               <PinterestHover targetContainerClass="article-rich-text-body" />
@@ -80,8 +72,6 @@ return (
             <ArticleBody   html={cleanedBody} featuredImageUrl={post.featuredImage} />
               </div>
               
-                {/* Article end */}
-                <AdUnit unit="nativeBanner" className="" />
           </div> 
           )}
 
@@ -91,9 +81,6 @@ return (
               <FAQAccordion items={faqItems} />
             </div>
           )}
-
-          {/* after FAQ  */}
-            <AdUnit unit="banner300x250" className="mt-8" />
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
