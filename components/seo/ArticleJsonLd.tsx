@@ -34,7 +34,7 @@ export function ArticleJsonLd({
     datePublished,
     dateModified: dateModified ?? datePublished,
     author: authorName
-      ? { "@type": "Person", name: authorName }
+      ? { "@type": "Person", name: authorName, url: `${SITE_URL}/about` }
       : { "@type": "Organization", name: SITE_NAME },
     image: absoluteImage ? [absoluteImage] : undefined,
     articleSection: categoryTitle,

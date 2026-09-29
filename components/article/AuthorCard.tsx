@@ -13,9 +13,8 @@ interface AuthorCardProps {
 export function AuthorCard({ name, image, bio }: AuthorCardProps) {
   const authorName = name ?? SITE_NAME;
 
-  const authorBio =
-    bio ||
-    "Beauty content creator and chief editor at EasyBeautyHacks. Dedicated to testing and sharing the best DIY skincare treatments, makeup techniques, and time-saving hair hacks. Mila helps women elevate their daily beauty routines without spending a fortune.";
+  // Real bio from the WordPress user profile only; never a made-up fallback.
+  const authorBio = bio || "";
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 sm:p-8 rounded-2xl bg-surface-warm border border-border w-full">
@@ -53,10 +52,10 @@ export function AuthorCard({ name, image, bio }: AuthorCardProps) {
         </p>
 
         <Link
-          href="/about-mila"
+          href="/about"
           className="inline-block mt-3 text-sm font-semibold text-primary hover:underline"
         >
-          Read more about Mila →
+          About the author →
         </Link>
       </div>
     </div>

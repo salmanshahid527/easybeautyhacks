@@ -11,6 +11,25 @@ function wpApiRoot(): string {
 
 const apiBase = () => `${wpApiRoot()}/wp/v2`;
 
+/**
+ * The WordPress hosts return transient 5xx errors during builds (prerendering). Retry those with a backoff.
+ * Each retry sends an X-Retry-Attempt header so Next.js's request memoization doesn't hand back the
+ * failed response again.
+ */
+async function fetchWithRetry(input: string, init?: RequestInit, attempts = 5): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const headers = new Headers(init?.headers);
+      if (attempt > 1) headers.set("X-Retry-Attempt", String(attempt));
+      const res = await fetch(input, { ...init, headers });
+      if (res.status < 500 || attempt >= attempts) return res;
+    } catch (err) {
+      if (attempt >= attempts) throw err;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
+  }
+}
+
 export async function fetchWp<T>(
   path: string,
   params?: Record<string, string | number | boolean | undefined>
@@ -25,7 +44,7 @@ export async function fetchWp<T>(
     }
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     next: { revalidate: 43200 },
     headers: { "Content-Type": "application/json" },
   });
@@ -53,7 +72,7 @@ export async function fetchWpPaginated<T>(
       }
     }
   }
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     next: { revalidate: 43200 },
     headers: { Accept: "application/json", "Content-Type": "application/json" },
   });
@@ -84,7 +103,7 @@ export async function fetchWpClientPaginated<T>(
       }
     }
   }
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     headers: { Accept: "application/json", "Content-Type": "application/json" },
   });
   if (!res.ok) {
@@ -150,7 +169,7 @@ export async function fetchWpCollectionAll<T>(
       fetchInit.next = { revalidate: revalidateOpt };
     }
 
-    const res = await fetch(url.toString(), fetchInit);
+    const res = await fetchWithRetry(url.toString(), fetchInit);
 
     if (!res.ok) {
       if (page === 1 && res.status === 404) return [];
@@ -188,7 +207,7 @@ export async function fetchWpClient<T>(
     }
   }
 
-  const res = await fetch(url.toString(), {
+  const res = await fetchWithRetry(url.toString(), {
     headers: { "Content-Type": "application/json" },
   });
 
