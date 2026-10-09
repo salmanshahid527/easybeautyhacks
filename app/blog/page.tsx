@@ -9,17 +9,28 @@ import { buildOgImage } from "@/lib/seo";
 
 export const revalidate = 43200;
 
-export async function generateMetadata(): Promise<Metadata> {
+type BlogPageProps = {
+  searchParams: Promise<{ page?: string; category?: string }>;
+};
+
+export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
+  const sp = await searchParams;
+  const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
   const latest = await getLatestPostForBlogMeta();
   const firstImage = latest?.featuredImage;
+  // Each unfiltered list page is its own canonical, so Google can follow the
+  // links on pages 2+ to the older posts. Filtered lists stay on /blog.
+  const paged = page > 1 && !sp.category?.trim();
+  const canonical = paged ? `${SITE_URL}/blog?page=${page}` : `${SITE_URL}/blog`;
+  const pageSuffix = paged ? ` (Page ${page})` : "";
 
   return {
-    title: "Beauty Blog — Tips & Hacks",
-    description: `Browse all beauty articles on ${SITE_NAME}. Skincare, makeup, hair care, nail art and more.`,
-    alternates: { canonical: `${SITE_URL}/blog` },
+    title: `Beauty Blog — Tips & Hacks${pageSuffix}`,
+    description: `Browse all beauty articles on ${SITE_NAME}. Skincare, makeup, hair care, nail art and more.${paged ? ` Page ${page}.` : ""}`,
+    alternates: { canonical },
     openGraph: {
       type: "website",
-      url: `${SITE_URL}/blog`,
+      url: canonical,
       title: `Beauty Blog — Tips & Hacks | ${SITE_NAME}`,
       description: `Browse all beauty articles on ${SITE_NAME}. Skincare, makeup, hair care, nail art and more.`,
       siteName: SITE_NAME,
@@ -33,10 +44,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
-
-type BlogPageProps = {
-  searchParams: Promise<{ page?: string; category?: string }>;
-};
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const sp = await searchParams;
